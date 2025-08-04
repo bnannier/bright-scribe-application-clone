@@ -1,0 +1,73 @@
+project_id = "klsuunzaybkjdswzezbz"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["https://lovable.dev"]
+jwt_expiry = 3600
+enable_signup = true
+email_double_confirm_changes = true
+enable_manual_linking = false
+enable_anonymous_sign_ins = false
+password_min_length = 8
+enable_leaked_password_detection = true
+mfa_max_enrolled_factors = 10
+
+[auth.external.google]
+enabled = true
+client_id = ""
+secret = ""
+redirect_uri = ""
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+enable_confirmations = false
+otp_exp = 300
+otp_length = 6
+template = {}
+
+[auth.sms]
+enable_signup = false
+enable_confirmations = false
+otp_exp = 300
+otp_length = 6
+template = "{code} is your verification code for {app_name}"
+
+[db]
+host = "127.0.0.1"
+port = 54322
+user = "postgres"
+password = "postgres"
+
+[storage]
+enabled = true
+file_size_limit = 52428800
+s3_enabled = false
+
+[inbucket]
+enabled = true
+port = 54324
+smtp_port = 54325
+pop3_port = 54326
+
+[realtime]
+enabled = true
+max_concurrent_users = 200
+
+[studio]
+enabled = true
+port = 54323
+
+[functions.google-drive-init]
+verify_jwt = true
+
+[functions.google-drive-upload]
+verify_jwt = true
