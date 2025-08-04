@@ -25,6 +25,7 @@ export const NotesApp = () => {
   const [newlyCreatedNotebookId, setNewlyCreatedNotebookId] = useState<string | undefined>();
   const [newlyCreatedNoteId, setNewlyCreatedNoteId] = useState<string | undefined>();
   const [selectedTrashNotebookId, setSelectedTrashNotebookId] = useState<string | undefined>();
+  const [mobileView, setMobileView] = useState<'notebooks' | 'notes'>('notebooks');
   
   // Refs to save current edits
   const saveNotebookEditRef = useRef<(() => Promise<void>) | null>(null);
@@ -130,6 +131,20 @@ export const NotesApp = () => {
     setCurrentFilter(filter);
     setSelectedNoteId(undefined); // Clear selected note when changing filters
     setSelectedTrashNotebookId(undefined); // Clear trash notebook selection when changing filters
+    setMobileView('notes'); // Switch to notes view on mobile when filter changes
+  };
+
+  const handleSelectNotebook = (notebookId: string | undefined) => {
+    setSelectedNotebookId(notebookId);
+    if (notebookId) {
+      setCurrentFilter('notebook');
+      setMobileView('notes'); // Switch to notes view on mobile when notebook is selected
+    }
+  };
+
+  const handleMobileBackToNotebooks = () => {
+    setMobileView('notebooks');
+    setSelectedNoteId(undefined);
   };
 
   const handleRenameNotebook = async (id: string, name: string) => {
@@ -245,19 +260,94 @@ export const NotesApp = () => {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-80 p-0">
-          <NotebookSidebar
-            notebooks={notebooks}
-            selectedNotebookId={selectedNotebookId}
-            currentFilter={currentFilter}
-            newlyCreatedNotebookId={newlyCreatedNotebookId}
-            onSelectNotebook={setSelectedNotebookId}
-            onCreateNotebook={handleCreateNotebook}
-            onFilterChange={handleFilterChange}
-            onRenameNotebook={handleRenameNotebook}
-            onDeleteNotebook={handleDeleteNotebook}
-            onArchiveNotebook={handleArchiveNotebook}
-            saveCurrentEditRef={saveNotebookEditRef}
-          />
+          {mobileView === 'notebooks' ? (
+            <NotebookSidebar
+              notebooks={notebooks}
+              selectedNotebookId={selectedNotebookId}
+              currentFilter={currentFilter}
+              newlyCreatedNotebookId={newlyCreatedNotebookId}
+              onSelectNotebook={handleSelectNotebook}
+              onCreateNotebook={handleCreateNotebook}
+              onFilterChange={handleFilterChange}
+              onRenameNotebook={handleRenameNotebook}
+              onDeleteNotebook={handleDeleteNotebook}
+              onArchiveNotebook={handleArchiveNotebook}
+              saveCurrentEditRef={saveNotebookEditRef}
+            />
+          ) : (
+            <div className="h-full flex flex-col">
+              <div className="p-4 border-b flex items-center gap-2">
+                <Button variant="ghost" size="sm" onClick={handleMobileBackToNotebooks}>
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <h2 className="font-semibold">{getHeaderTitle()}</h2>
+                <div className="flex-1"></div>
+                {currentFilter === 'trash' && (
+                  (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
+                  (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
+                ) && (
+                  <Button 
+                    variant="destructive" 
+                    size="sm" 
+                    onClick={() => setShowEmptyTrashConfirm(true)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+                {currentFilter !== 'trash' && currentFilter !== 'archived' && (
+                  <Button variant="outline" size="sm" onClick={handleCreateNote}>
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
+              <div className="p-4 border-b">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search notes..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+              </div>
+              <div className="flex-1 overflow-hidden">
+                {currentFilter === 'trash' ? (
+                  <TrashView />
+                ) : (
+                  <NotesList
+                    notes={filteredNotes}
+                    selectedNoteId={selectedNoteId}
+                    newlyCreatedNoteId={newlyCreatedNoteId}
+                    onSelectNote={(noteId) => {
+                      setSelectedNoteId(noteId);
+                      setIsSidebarOpen(false); // Close sidebar when note is selected
+                    }}
+                    onRenameNote={async (id, title) => { 
+                      await updateNote(id, { title }); 
+                      refetchNotes();
+                    }}
+                    onDeleteNote={async (id) => { 
+                      await deleteNote(id); 
+                      refetchNotes();
+                      refetchTrash();
+                    }}
+                    onArchiveNote={async (id) => { 
+                      await archiveNote(id); 
+                      refetchNotes();
+                      refetchArchive();
+                    }}
+                    onToggleFavorite={async (id) => { 
+                      await toggleFavorite(id); 
+                      refetchNotes();
+                    }}
+                    isTrashView={false}
+                    saveCurrentEditRef={saveNoteEditRef}
+                  />
+                )}
+              </div>
+            </div>
+          )}
         </SheetContent>
       </Sheet>
 
@@ -278,8 +368,8 @@ export const NotesApp = () => {
         />
       </div>
 
-      {/* Notes List */}
-      <div className="w-80 border-r bg-background">
+      {/* Notes List - Hidden on mobile */}
+      <div className="hidden md:block w-80 border-r bg-background">
         <div className="p-4 border-b flex items-center gap-2">
           {/* Hierarchical navigation back button */}
           {showBackButton && (
