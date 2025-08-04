@@ -1,0 +1,227 @@
+import React, { useState, useEffect } from 'react';
+import { Note, useNotes } from '@/hooks/useNotes';
+import { Notebook } from '@/hooks/useNotebooks';
+import { BasicEditor } from '@/components/editor/BasicEditor';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Star, 
+  Archive, 
+  MoreHorizontal, 
+  Upload, 
+  Download,
+  CloudOff,
+  Cloud,
+  CloudUpload
+} from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useToast } from '@/hooks/use-toast';
+
+interface NoteEditorProps {
+  note: Note;
+  notebooks: Notebook[];
+}
+
+export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
+  const [title, setTitle] = useState(note.title);
+  const [content, setContent] = useState<string>(note.content || '');
+  const [selectedNotebookId, setSelectedNotebookId] = useState(note.notebook_id);
+  
+  const MAX_TITLE_LENGTH = 200;
+  const { updateNote, toggleFavorite, archiveNote } = useNotes();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setTitle(note.title);
+    setContent(note.content || '');
+    setSelectedNotebookId(note.notebook_id);
+  }, [note]);
+
+  const handleSave = async () => {
+    // Validate title
+    if (!title.trim()) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: "Note title cannot be empty."
+      });
+      return;
+    }
+    
+    if (title.length > MAX_TITLE_LENGTH) {
+      toast({
+        variant: "destructive",
+        title: "Validation Error",
+        description: `Note title cannot exceed ${MAX_TITLE_LENGTH} characters.`
+      });
+      return;
+    }
+
+    const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+    
+    const updated = await updateNote(note.id, {
+      title: sanitizedTitle,
+      content,
+      notebook_id: selectedNotebookId,
+    });
+
+    if (updated) {
+      toast({
+        title: "Note saved",
+        description: "Your note has been saved successfully.",
+      });
+    }
+  };
+
+  const handleToggleFavorite = async () => {
+    await toggleFavorite(note.id);
+  };
+
+  const handleArchive = async () => {
+    const success = await archiveNote(note.id);
+    if (success) {
+      toast({
+        title: "Note archived",
+        description: "The note has been moved to archive.",
+      });
+    }
+  };
+
+  const handleExportToGoogleDocs = async () => {
+    toast({
+      title: "Export to Google Docs",
+      description: "This feature will be available soon!",
+    });
+  };
+
+  const getSyncStatusIcon = () => {
+    switch (note.sync_status) {
+      case 'synced':
+        return <Cloud className="h-4 w-4 text-green-500" />;
+      case 'pending':
+        return <CloudUpload className="h-4 w-4 text-yellow-500" />;
+      case 'error':
+        return <CloudOff className="h-4 w-4 text-red-500" />;
+      default:
+        return <CloudOff className="h-4 w-4 text-gray-500" />;
+    }
+  };
+
+  const getSyncStatusText = () => {
+    switch (note.sync_status) {
+      case 'synced':
+        return 'Synced to Google Drive';
+      case 'pending':
+        return 'Syncing to Google Drive...';
+      case 'error':
+        return 'Sync failed';
+      default:
+        return 'Not synced';
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="border-b p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <Input
+              value={title}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (value.length <= MAX_TITLE_LENGTH) {
+                  setTitle(value);
+                }
+              }}
+              className="text-xl font-semibold border-none shadow-none p-0 h-auto"
+              placeholder="Untitled Note"
+              maxLength={MAX_TITLE_LENGTH}
+            />
+            {title.length > MAX_TITLE_LENGTH * 0.9 && (
+              <span className="text-xs text-muted-foreground">
+                {title.length}/{MAX_TITLE_LENGTH}
+              </span>
+            )}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleToggleFavorite}
+            >
+              <Star 
+                className={`h-4 w-4 ${
+                  note.is_favorite 
+                    ? 'text-yellow-500 fill-current' 
+                    : 'text-muted-foreground'
+                }`} 
+              />
+            </Button>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Badge variant="outline" className="flex items-center space-x-1">
+              {getSyncStatusIcon()}
+              <span className="text-xs">{getSyncStatusText()}</span>
+            </Badge>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon">
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportToGoogleDocs}>
+                  <Download className="h-4 w-4 mr-2" />
+                  Export to Google Docs
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleArchive}>
+                  <Archive className="h-4 w-4 mr-2" />
+                  Archive Note
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <Button onClick={handleSave}>
+              Save
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <div className="flex-1">
+            <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder="Select notebook" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="no-notebook">No Notebook</SelectItem>
+                {notebooks.map((notebook) => (
+                  <SelectItem key={notebook.id} value={notebook.id}>
+                    {notebook.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="text-sm text-muted-foreground">
+            Last updated: {new Date(note.updated_at).toLocaleString()}
+          </div>
+        </div>
+      </div>
+
+      {/* Editor */}
+      <div className="flex-1 p-4 overflow-hidden">
+        <BasicEditor
+          content={content}
+          onChange={setContent}
+          placeholder="Start writing your note..."
+          className="h-full"
+        />
+      </div>
+    </div>
+  );
+};
