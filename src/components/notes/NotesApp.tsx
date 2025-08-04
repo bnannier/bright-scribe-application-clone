@@ -26,6 +26,8 @@ export const NotesApp = () => {
   const [newlyCreatedNoteId, setNewlyCreatedNoteId] = useState<string | undefined>();
   const [selectedTrashNotebookId, setSelectedTrashNotebookId] = useState<string | undefined>();
   const [mobileView, setMobileView] = useState<'notebooks' | 'notes'>('notebooks');
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'forward' | 'backward'>('forward');
   
   // Refs to save current edits
   const saveNotebookEditRef = useRef<(() => Promise<void>) | null>(null);
@@ -131,20 +133,43 @@ export const NotesApp = () => {
     setCurrentFilter(filter);
     setSelectedNoteId(undefined); // Clear selected note when changing filters
     setSelectedTrashNotebookId(undefined); // Clear trash notebook selection when changing filters
-    setMobileView('notes'); // Switch to notes view on mobile when filter changes
+    
+    // Trigger transition to notes view on mobile
+    if (mobileView === 'notebooks') {
+      setIsTransitioning(true);
+      setTransitionDirection('forward');
+      setTimeout(() => {
+        setMobileView('notes');
+        setIsTransitioning(false);
+      }, 300);
+    }
   };
 
   const handleSelectNotebook = (notebookId: string | undefined) => {
     setSelectedNotebookId(notebookId);
     if (notebookId) {
       setCurrentFilter('notebook');
-      setMobileView('notes'); // Switch to notes view on mobile when notebook is selected
+      
+      // Trigger transition to notes view on mobile
+      if (mobileView === 'notebooks') {
+        setIsTransitioning(true);
+        setTransitionDirection('forward');
+        setTimeout(() => {
+          setMobileView('notes');
+          setIsTransitioning(false);
+        }, 300);
+      }
     }
   };
 
   const handleMobileBackToNotebooks = () => {
-    setMobileView('notebooks');
-    setSelectedNoteId(undefined);
+    setIsTransitioning(true);
+    setTransitionDirection('backward');
+    setTimeout(() => {
+      setMobileView('notebooks');
+      setSelectedNoteId(undefined);
+      setIsTransitioning(false);
+    }, 300);
   };
 
   const handleRenameNotebook = async (id: string, name: string) => {
@@ -259,95 +284,121 @@ export const NotesApp = () => {
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-80 p-0">
-          {mobileView === 'notebooks' ? (
-            <NotebookSidebar
-              notebooks={notebooks}
-              selectedNotebookId={selectedNotebookId}
-              currentFilter={currentFilter}
-              newlyCreatedNotebookId={newlyCreatedNotebookId}
-              onSelectNotebook={handleSelectNotebook}
-              onCreateNotebook={handleCreateNotebook}
-              onFilterChange={handleFilterChange}
-              onRenameNotebook={handleRenameNotebook}
-              onDeleteNotebook={handleDeleteNotebook}
-              onArchiveNotebook={handleArchiveNotebook}
-              saveCurrentEditRef={saveNotebookEditRef}
-            />
-          ) : (
-            <div className="h-full flex flex-col">
-              <div className="p-4 border-b flex items-center gap-2">
-                <Button variant="ghost" size="sm" onClick={handleMobileBackToNotebooks}>
-                  <ChevronLeft className="h-4 w-4" />
-                </Button>
-                <h2 className="font-semibold">{getHeaderTitle()}</h2>
-                <div className="flex-1"></div>
-                {currentFilter === 'trash' && (
-                  (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
-                  (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
-                ) && (
-                  <Button 
-                    variant="destructive" 
-                    size="sm" 
-                    onClick={() => setShowEmptyTrashConfirm(true)}
-                  >
-                    <Trash2 className="h-4 w-4" />
+        <SheetContent side="left" className="w-80 p-0 overflow-hidden">
+          <div className="relative h-full">
+            {/* Notebooks View */}
+            <div 
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
+                mobileView === 'notebooks' 
+                  ? (isTransitioning && transitionDirection === 'backward' 
+                      ? 'animate-slide-in-left' 
+                      : 'translate-x-0')
+                  : (isTransitioning && transitionDirection === 'forward'
+                      ? 'animate-slide-out-left'
+                      : '-translate-x-full')
+              }`}
+            >
+              <NotebookSidebar
+                notebooks={notebooks}
+                selectedNotebookId={selectedNotebookId}
+                currentFilter={currentFilter}
+                newlyCreatedNotebookId={newlyCreatedNotebookId}
+                onSelectNotebook={handleSelectNotebook}
+                onCreateNotebook={handleCreateNotebook}
+                onFilterChange={handleFilterChange}
+                onRenameNotebook={handleRenameNotebook}
+                onDeleteNotebook={handleDeleteNotebook}
+                onArchiveNotebook={handleArchiveNotebook}
+                saveCurrentEditRef={saveNotebookEditRef}
+              />
+            </div>
+            
+            {/* Notes View */}
+            <div 
+              className={`absolute inset-0 transition-transform duration-300 ease-out ${
+                mobileView === 'notes' 
+                  ? (isTransitioning && transitionDirection === 'forward' 
+                      ? 'animate-slide-in-right' 
+                      : 'translate-x-0')
+                  : (isTransitioning && transitionDirection === 'backward'
+                      ? 'animate-slide-out-right'
+                      : 'translate-x-full')
+              }`}
+            >
+              <div className="h-full flex flex-col">
+                <div className="p-4 border-b flex items-center gap-2">
+                  <Button variant="ghost" size="sm" onClick={handleMobileBackToNotebooks}>
+                    <ChevronLeft className="h-4 w-4" />
                   </Button>
-                )}
-                {currentFilter !== 'trash' && currentFilter !== 'archived' && (
-                  <Button variant="outline" size="sm" onClick={handleCreateNote}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-              <div className="p-4 border-b">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search notes..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9"
-                  />
+                  <h2 className="font-semibold">{getHeaderTitle()}</h2>
+                  <div className="flex-1"></div>
+                  {currentFilter === 'trash' && (
+                    (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
+                    (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
+                  ) && (
+                    <Button 
+                      variant="destructive" 
+                      size="sm" 
+                      onClick={() => setShowEmptyTrashConfirm(true)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {currentFilter !== 'trash' && currentFilter !== 'archived' && (
+                    <Button variant="outline" size="sm" onClick={handleCreateNote}>
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="p-4 border-b">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                    <Input
+                      placeholder="Search notes..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  {currentFilter === 'trash' ? (
+                    <TrashView />
+                  ) : (
+                    <NotesList
+                      notes={filteredNotes}
+                      selectedNoteId={selectedNoteId}
+                      newlyCreatedNoteId={newlyCreatedNoteId}
+                      onSelectNote={(noteId) => {
+                        setSelectedNoteId(noteId);
+                        setIsSidebarOpen(false); // Close sidebar when note is selected
+                      }}
+                      onRenameNote={async (id, title) => { 
+                        await updateNote(id, { title }); 
+                        refetchNotes();
+                      }}
+                      onDeleteNote={async (id) => { 
+                        await deleteNote(id); 
+                        refetchNotes();
+                        refetchTrash();
+                      }}
+                      onArchiveNote={async (id) => { 
+                        await archiveNote(id); 
+                        refetchNotes();
+                        refetchArchive();
+                      }}
+                      onToggleFavorite={async (id) => { 
+                        await toggleFavorite(id); 
+                        refetchNotes();
+                      }}
+                      isTrashView={false}
+                      saveCurrentEditRef={saveNoteEditRef}
+                    />
+                  )}
                 </div>
               </div>
-              <div className="flex-1 overflow-hidden">
-                {currentFilter === 'trash' ? (
-                  <TrashView />
-                ) : (
-                  <NotesList
-                    notes={filteredNotes}
-                    selectedNoteId={selectedNoteId}
-                    newlyCreatedNoteId={newlyCreatedNoteId}
-                    onSelectNote={(noteId) => {
-                      setSelectedNoteId(noteId);
-                      setIsSidebarOpen(false); // Close sidebar when note is selected
-                    }}
-                    onRenameNote={async (id, title) => { 
-                      await updateNote(id, { title }); 
-                      refetchNotes();
-                    }}
-                    onDeleteNote={async (id) => { 
-                      await deleteNote(id); 
-                      refetchNotes();
-                      refetchTrash();
-                    }}
-                    onArchiveNote={async (id) => { 
-                      await archiveNote(id); 
-                      refetchNotes();
-                      refetchArchive();
-                    }}
-                    onToggleFavorite={async (id) => { 
-                      await toggleFavorite(id); 
-                      refetchNotes();
-                    }}
-                    isTrashView={false}
-                    saveCurrentEditRef={saveNoteEditRef}
-                  />
-                )}
-              </div>
             </div>
-          )}
+          </div>
         </SheetContent>
       </Sheet>
 
