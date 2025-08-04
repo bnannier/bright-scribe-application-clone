@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 221 83% 48%;
+    --primary-muted: 221 83% 90%;
+    
+    --secondary: 210 40% 98%;
+    --secondary-foreground: 222.2 84% 4.9%;
+    --secondary-hover: 210 40% 95%;
+    
+    --muted: 210 40% 98%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 98%;
+    --accent-hover: 262 83% 53%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 355.7 100% 97.3%;
+    
+    --warning: 32 95% 44%;
+    --warning-foreground: 210 40% 98%;
+    
+    --info: 221 83% 53%;
+    --info-foreground: 0 0% 98%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 221 83% 53%;
+    
+    --radius: 0.5rem;
+    
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 210 40% 98%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%));
+    --gradient-secondary: linear-gradient(135deg, hsl(210 40% 98%), hsl(220 13% 91%));
+    --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%));
+
+    /* Shadows */
+    --shadow-soft: 0 2px 8px hsl(221 83% 53% / 0.08);
+    --shadow-medium: 0 4px 16px hsl(221 83% 53% / 0.12);
+    --shadow-large: 0 8px 32px hsl(221 83% 53% / 0.16);
+    --shadow-glow: 0 0 24px hsl(221 83% 53% / 0.2);
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 221 83% 53%;
+    --primary-foreground: 222.2 84% 4.9%;
+    --primary-hover: 221 83% 58%;
+    --primary-muted: 221 83% 20%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    --secondary-hover: 217.2 32.6% 20%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 262 83% 58%;
+    --accent-foreground: 210 40% 98%;
+    --accent-hover: 262 83% 63%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 355.7 100% 97.3%;
+    
+    --warning: 32 95% 44%;
+    --warning-foreground: 210 40% 98%;
+    
+    --info: 221 83% 53%;
+    --info-foreground: 0 0% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 221 83% 53%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 221 83% 53%;
+    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 221 83% 53%;
+
+    /* Dark mode gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%));
+    --gradient-secondary: linear-gradient(135deg, hsl(217.2 32.6% 17.5%), hsl(240 3.7% 15.9%));
+    --gradient-hero: linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%));
+
+    /* Dark mode shadows */
+    --shadow-soft: 0 2px 8px hsl(0 0% 0% / 0.2);
+    --shadow-medium: 0 4px 16px hsl(0 0% 0% / 0.3);
+    --shadow-large: 0 8px 32px hsl(0 0% 0% / 0.4);
+    --shadow-glow: 0 0 24px hsl(221 83% 53% / 0.3);
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+}
+
+@layer components {
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
+  }
+}
