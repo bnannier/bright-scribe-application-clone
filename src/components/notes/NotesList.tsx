@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Note } from '@/hooks/useNotes';
 import { ArchivedNote } from '@/hooks/useArchive';
 import { DeletedNote } from '@/hooks/useTrash';
@@ -197,7 +197,7 @@ export const NotesList: React.FC<NotesListProps> = ({
 
     return items;
   };
-  const getPreviewText = (content: any) => {
+  const getPreviewText = useCallback((content: any) => {
     if (!content) return 'No content';
     
     // Handle string content
@@ -216,7 +216,7 @@ export const NotesList: React.FC<NotesListProps> = ({
 
     const text = extractText(content);
     return text.trim() || 'No content';
-  };
+  }, []);
 
   return (
     <ScrollArea className="h-full">
