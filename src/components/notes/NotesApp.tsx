@@ -277,9 +277,9 @@ export const NotesApp = () => {
   // Main unified layout for all views
   return (
     <div className="h-screen bg-background flex">
-      {/* Mobile Sidebar */}
+      {/* Mobile & Tablet Sidebar */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild className="md:hidden">
+        <SheetTrigger asChild className="lg:hidden">
           <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
             <Menu className="h-5 w-5" />
           </Button>
@@ -403,7 +403,7 @@ export const NotesApp = () => {
       </Sheet>
 
       {/* Desktop Sidebar */}
-      <div className="hidden md:block w-80 border-r bg-muted/10">
+      <div className="hidden lg:block w-80 border-r bg-muted/10">
         <NotebookSidebar
           notebooks={notebooks}
           selectedNotebookId={selectedNotebookId}
@@ -419,8 +419,8 @@ export const NotesApp = () => {
         />
       </div>
 
-      {/* Notes List - Hidden on mobile */}
-      <div className="hidden md:block w-80 border-r bg-background">
+      {/* Notes List - Hidden on mobile and tablet */}
+      <div className="hidden lg:block w-80 border-r bg-background">
         <div className="p-4 border-b flex items-center gap-2">
           {/* Hierarchical navigation back button */}
           {showBackButton && (
