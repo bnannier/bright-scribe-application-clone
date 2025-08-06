@@ -34,7 +34,7 @@ export const NotesApp = () => {
   const saveNoteEditRef = useRef<(() => Promise<void>) | null>(null);
   
   const { notebooks, createNotebook, updateNotebook, deleteNotebook, archiveNotebook, refetch: refetchNotebooks } = useOfflineNotebooks();
-  const { notes: allNotes, createNote, updateNote, deleteNote, toggleFavorite, archiveNote, refetch: refetchNotes } = useOfflineNotes();
+  const { notes: allNotes, createNote, updateNote, deleteNote, toggleFavorite, archiveNote, refreshNote, resolveSyncConflicts, refetch: refetchNotes } = useOfflineNotes();
   const { archivedNotes, refetch: refetchArchive } = useArchive();
   const { deletedNotes, deletedNotebooks, emptyTrash, permanentlyDeleteNotebook, permanentlyDeleteNote, refetch: refetchTrash } = useTrash();
   const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
@@ -370,8 +370,9 @@ export const NotesApp = () => {
                       notes={filteredNotes}
                       selectedNoteId={selectedNoteId}
                       newlyCreatedNoteId={newlyCreatedNoteId}
-                      onSelectNote={(noteId) => {
+                      onSelectNote={async (noteId) => {
                         setSelectedNoteId(noteId);
+                        await refreshNote(noteId); // Refresh note data when selected
                         setIsSidebarOpen(false); // Close sidebar when note is selected
                       }}
                       onRenameNote={async (id, title) => { 
@@ -466,7 +467,10 @@ export const NotesApp = () => {
             notes={filteredNotes}
             selectedNoteId={selectedNoteId}
             newlyCreatedNoteId={newlyCreatedNoteId}
-            onSelectNote={setSelectedNoteId}
+            onSelectNote={async (noteId) => {
+              setSelectedNoteId(noteId);
+              await refreshNote(noteId); // Refresh note data when selected
+            }}
             onRenameNote={async (id, title) => { 
               await updateNote(id, { title }); 
               refetchNotes();
