@@ -304,12 +304,14 @@ export const NotesApp = () => {
                 selectedNotebookId={selectedNotebookId}
                 currentFilter={currentFilter}
                 newlyCreatedNotebookId={newlyCreatedNotebookId}
+                searchQuery={searchQuery}
                 onSelectNotebook={handleSelectNotebook}
                 onCreateNotebook={handleCreateNotebook}
                 onFilterChange={handleFilterChange}
                 onRenameNotebook={handleRenameNotebook}
                 onDeleteNotebook={handleDeleteNotebook}
                 onArchiveNotebook={handleArchiveNotebook}
+                onSearchChange={setSearchQuery}
                 saveCurrentEditRef={saveNotebookEditRef}
               />
             </div>
@@ -350,17 +352,6 @@ export const NotesApp = () => {
                       <Plus className="h-4 w-4" />
                     </Button>
                   )}
-                </div>
-                <div className="p-4 border-b">
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      placeholder="Search notes..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9"
-                    />
-                  </div>
                 </div>
                 <div className="flex-1 overflow-hidden">
                   {currentFilter === 'trash' ? (
@@ -411,12 +402,14 @@ export const NotesApp = () => {
           selectedNotebookId={selectedNotebookId}
           currentFilter={currentFilter}
           newlyCreatedNotebookId={newlyCreatedNotebookId}
+          searchQuery={searchQuery}
           onSelectNotebook={handleSelectNotebook}
           onCreateNotebook={handleCreateNotebook}
           onFilterChange={handleFilterChange}
           onRenameNotebook={handleRenameNotebook}
           onDeleteNotebook={handleDeleteNotebook}
           onArchiveNotebook={handleArchiveNotebook}
+          onSearchChange={setSearchQuery}
           saveCurrentEditRef={saveNotebookEditRef}
         />
       </div>
@@ -431,15 +424,6 @@ export const NotesApp = () => {
             </Button>
           )}
           
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search notes..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
           {currentFilter === 'trash' && (
             (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
             (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
