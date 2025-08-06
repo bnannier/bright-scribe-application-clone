@@ -416,7 +416,7 @@ export const NotesApp = () => {
 
       {/* Notes List - Hidden on mobile and tablet, shown on desktop */}
       <div className="hidden lg:block w-80 border-r bg-background">
-        <div className="p-4 border-b flex items-center gap-2">
+        <div className="p-4 border-b flex items-center justify-between gap-2">
           {/* Hierarchical navigation back button */}
           {showBackButton && (
             <Button variant="ghost" size="sm" onClick={handleBackClick}>
@@ -437,7 +437,7 @@ export const NotesApp = () => {
             </Button>
           )}
           {currentFilter !== 'trash' && currentFilter !== 'archived' && (
-            <Button variant="outline" size="icon" onClick={handleCreateNote} className="rounded-full h-8 w-8">
+            <Button variant="outline" size="icon" onClick={handleCreateNote} className="rounded-full h-[36px] w-[36px]">
               <Pen className="h-4 w-4" />
             </Button>
           )}
