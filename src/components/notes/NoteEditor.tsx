@@ -189,7 +189,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Folder className="h-4 w-4 flex-shrink-0" />
                   <SelectValue placeholder="No Notebook" />
-                  <ChevronDown className="h-3 w-3 flex-shrink-0" />
                 </div>
               </SelectTrigger>
               <SelectContent>
