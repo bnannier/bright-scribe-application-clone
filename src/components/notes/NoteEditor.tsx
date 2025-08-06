@@ -185,10 +185,9 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           <div className="flex items-center space-x-2">
             {/* Notebook Dropdown styled like title */}
             <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
-              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-xl font-semibold text-muted-foreground hover:text-foreground transition-colors w-auto">
+              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-sm font-medium text-black hover:text-gray-600 transition-colors w-auto">
                 <div className="flex items-center gap-2 whitespace-nowrap">
-                  <Folder className="h-4 w-4 flex-shrink-0" />
-                  <SelectValue placeholder="No Notebook" className="text-xl font-semibold" />
+                  <SelectValue placeholder="No Notebook" className="text-sm font-medium" />
                 </div>
               </SelectTrigger>
               <SelectContent>
@@ -216,11 +215,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
               placeholder="Untitled Note"
               maxLength={MAX_TITLE_LENGTH}
             />
-            {title.length > MAX_TITLE_LENGTH * 0.9 && (
-              <span className="text-xs text-muted-foreground">
-                {title.length}/{MAX_TITLE_LENGTH}
-              </span>
-            )}
             <Button
               variant="ghost"
               size="icon"
@@ -234,6 +228,11 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
                 }`} 
               />
             </Button>
+            {title.length > MAX_TITLE_LENGTH * 0.9 && (
+              <span className="text-xs text-muted-foreground">
+                {title.length}/{MAX_TITLE_LENGTH}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center space-x-2">
