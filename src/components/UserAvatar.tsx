@@ -1,4 +1,4 @@
-import { LogOut, User } from 'lucide-react';
+import { LogOut, User, Moon, Sun } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,11 +11,13 @@ import {
 import { useAuth } from '@/hooks/useAuth';
 import { useUserProfile } from '@/hooks/useUserProfile';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from 'next-themes';
 
 export const UserAvatar = () => {
   const { user, signOut } = useAuth();
   const { profile, getInitials } = useUserProfile();
   const { toast } = useToast();
+  const { theme, setTheme } = useTheme();
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -61,6 +63,14 @@ export const UserAvatar = () => {
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+          {theme === 'dark' ? (
+            <Sun className="mr-2 h-4 w-4" />
+          ) : (
+            <Moon className="mr-2 h-4 w-4" />
+          )}
+          <span>{theme === 'dark' ? 'Light mode' : 'Dark mode'}</span>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut}>
