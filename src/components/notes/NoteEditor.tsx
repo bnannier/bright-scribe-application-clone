@@ -185,7 +185,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           <div className="flex items-center space-x-2">
             {/* Notebook Dropdown styled like title */}
             <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
-              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-sm font-medium text-black hover:text-gray-600 transition-colors w-auto">
+              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-sm font-medium text-foreground hover:text-muted-foreground transition-colors w-auto">
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <SelectValue placeholder="No Notebook" className="text-sm font-medium" />
                 </div>
@@ -236,6 +236,16 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           </div>
 
           <div className="flex items-center space-x-2">
+            {/* Sync status and last updated */}
+            <Badge variant="outline" className="flex items-center space-x-1">
+              {getSyncStatusIcon()}
+              <span className="text-xs">{getSyncStatusText()}</span>
+            </Badge>
+            <span className="text-xs text-muted-foreground">
+              Last updated: {new Date(note.updated_at).toLocaleString()}
+              {hasUnsavedChanges && <span className="text-orange-500 ml-1">• Unsaved</span>}
+            </span>
+            
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -267,25 +277,13 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       </div>
 
       {/* Editor */}
-      <div className="flex-1 overflow-hidden flex flex-col">
+      <div className="flex-1 flex flex-col min-h-0">
         <BasicEditor
           content={content}
           onChange={setContent}
           placeholder="Start writing your note..."
           className="flex-1"
         />
-        
-        {/* Footer with sync status and last updated */}
-        <div className="flex items-center justify-between pt-4 border-t mt-4">
-          <Badge variant="outline" className="flex items-center space-x-1">
-            {getSyncStatusIcon()}
-            <span className="text-xs">{getSyncStatusText()}</span>
-          </Badge>
-          <div className="text-sm text-muted-foreground flex items-center gap-2">
-            Last updated: {new Date(note.updated_at).toLocaleString()}
-            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
-          </div>
-        </div>
       </div>
     </div>
   );
