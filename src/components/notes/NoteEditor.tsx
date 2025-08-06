@@ -180,7 +180,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
   return (
     <div className="h-full flex flex-col">
       {/* Header */}
-      <div className="border-b p-4 space-y-4">
+      <div className="border-b p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {/* Notebook Dropdown styled like title */}
