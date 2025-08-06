@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Note, useNotes } from '@/hooks/useNotes';
-import { Notebook } from '@/hooks/useNotebooks';
+import { OfflineNote, useOfflineNotes } from '@/hooks/useOfflineNotes';
+import { OfflineNotebook } from '@/hooks/useOfflineNotebooks';
 import { BasicEditor } from '@/components/editor/BasicEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,8 +20,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useToast } from '@/hooks/use-toast';
 
 interface NoteEditorProps {
-  note: Note;
-  notebooks: Notebook[];
+  note: OfflineNote;
+  notebooks: OfflineNotebook[];
 }
 
 export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
@@ -30,7 +30,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
   const [selectedNotebookId, setSelectedNotebookId] = useState(note.notebook_id);
   
   const MAX_TITLE_LENGTH = 200;
-  const { updateNote, toggleFavorite, archiveNote } = useNotes();
+  const { updateNote, toggleFavorite, archiveNote } = useOfflineNotes();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -80,13 +80,11 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
   };
 
   const handleArchive = async () => {
-    const success = await archiveNote(note.id);
-    if (success) {
-      toast({
-        title: "Note archived",
-        description: "The note has been moved to archive.",
-      });
-    }
+    await archiveNote(note.id);
+    toast({
+      title: "Note archived",
+      description: "The note has been moved to archive.",
+    });
   };
 
   const handleExportToGoogleDocs = async () => {
@@ -102,23 +100,23 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
         return <Cloud className="h-4 w-4 text-green-500" />;
       case 'pending':
         return <CloudUpload className="h-4 w-4 text-yellow-500" />;
-      case 'error':
+      case 'conflict':
         return <CloudOff className="h-4 w-4 text-red-500" />;
       default:
-        return <CloudOff className="h-4 w-4 text-gray-500" />;
+        return <Cloud className="h-4 w-4 text-green-500" />;
     }
   };
 
   const getSyncStatusText = () => {
     switch (note.sync_status) {
       case 'synced':
-        return 'Synced to Google Drive';
+        return 'Synced';
       case 'pending':
-        return 'Syncing to Google Drive...';
-      case 'error':
-        return 'Sync failed';
+        return 'Pending sync...';
+      case 'conflict':
+        return 'Sync conflict';
       default:
-        return 'Not synced';
+        return 'Synced';
     }
   };
 
