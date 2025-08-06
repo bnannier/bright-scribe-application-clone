@@ -257,42 +257,36 @@
     box-shadow: var(--shadow-medium) !important;
   }
 
-  /* AGGRESSIVE RESET - Target ANY element with background colors in SunEditor */
-  .sun-editor [style*="background-color"],
-  .sun-editor [style*="background:"],
-  .sun-editor [style*="color:"],
-  .dark-editor .sun-editor [style*="background-color"],
-  .dark-editor .sun-editor [style*="background:"],
-  .dark-editor .sun-editor [style*="color:"],
-  .light-editor .sun-editor [style*="background-color"],
-  .light-editor .sun-editor [style*="background:"],
-  .light-editor .sun-editor [style*="color:"] {
-    background: initial !important;
-    background-color: initial !important;
-    color: initial !important;
-  }
-
-  /* Reset ALL CSS properties on color swatches */
+  /* COMPLETELY EXCLUDE COLOR SWATCHES FROM ALL THEME STYLING */
+  .sun-editor .se-list-color,
   .sun-editor .se-list-color *,
+  .dark-editor .sun-editor .se-list-color,
   .dark-editor .sun-editor .se-list-color *,
+  .light-editor .sun-editor .se-list-color,
   .light-editor .sun-editor .se-list-color * {
-    all: revert !important;
+    all: unset !important;
+    display: revert !important;
+    box-sizing: revert !important;
+    font-family: revert !important;
+    font-size: revert !important;
+    line-height: revert !important;
+    border-radius: revert !important;
+    cursor: revert !important;
+    margin: revert !important;
+    padding: revert !important;
+    width: revert !important;
+    height: revert !important;
+    min-width: revert !important;
+    min-height: revert !important;
   }
 
-  /* Completely disable theme overrides on any color-related elements */
-  .sun-editor [data-value*="#"],
-  .sun-editor [title*="color"],
-  .sun-editor .se-color-pallet *,
-  .dark-editor .sun-editor [data-value*="#"],
-  .dark-editor .sun-editor [title*="color"],
-  .dark-editor .sun-editor .se-color-pallet *,
-  .light-editor .sun-editor [data-value*="#"],
-  .light-editor .sun-editor [title*="color"],
-  .light-editor .sun-editor .se-color-pallet * {
-    background: initial !important;
-    background-color: initial !important;
-    color: initial !important;
-    border: initial !important;
+  /* Specifically for color swatch container */
+  .dark-editor .sun-editor .se-list-color,
+  .light-editor .sun-editor .se-list-color {
+    background: hsl(var(--popover)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    box-shadow: var(--shadow-medium) !important;
+    border-radius: 6px !important;
   }
 
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
