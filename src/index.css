@@ -194,15 +194,15 @@
     background: hsl(var(--accent)) !important;
   }
 
-  /* Dark mode dropdown/submenu styles */
-  .dark-editor .sun-editor .se-dropdown,
-  .dark-editor .sun-editor .se-list-layer,
-  .dark-editor .sun-editor .se-submenu,
-  .dark-editor .sun-editor .se-list-basic,
-  .dark-editor .sun-editor .se-selector-table,
-  .dark-editor .sun-editor .se-submenu-list,
-  .dark-editor .sun-editor .se-list,
-  .dark-editor .sun-editor .se-layer {
+  /* Dark mode dropdown/submenu styles - EXCLUDING color pickers */
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color),
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color),
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color),
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color),
+  .dark-editor .sun-editor .se-selector-table:not(.se-list-color),
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color),
+  .dark-editor .sun-editor .se-list:not(.se-list-color),
+  .dark-editor .sun-editor .se-layer:not(.se-list-color) {
     background: hsl(var(--popover)) !important;
     color: hsl(var(--popover-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -210,78 +210,71 @@
     z-index: 50 !important;
   }
 
-  .dark-editor .sun-editor .se-dropdown button,
-  .dark-editor .sun-editor .se-list-layer button,
-  .dark-editor .sun-editor .se-submenu button,
-  .dark-editor .sun-editor .se-list-basic button,
-  .dark-editor .sun-editor .se-submenu-list button,
-  .dark-editor .sun-editor .se-dropdown *,
-  .dark-editor .sun-editor .se-list-layer *,
-  .dark-editor .sun-editor .se-submenu *,
-  .dark-editor .sun-editor .se-list-basic *,
-  .dark-editor .sun-editor .se-submenu-list *,
-  .dark-editor .sun-editor .se-dropdown span,
-  .dark-editor .sun-editor .se-list-layer span,
-  .dark-editor .sun-editor .se-submenu span,
-  .dark-editor .sun-editor .se-list-basic span,
-  .dark-editor .sun-editor .se-submenu-list span {
+  /* Dark mode button styles - EXCLUDING color picker buttons */
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button,
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button,
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button,
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button,
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button,
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) *,
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) *,
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color) *,
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) *,
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) *,
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) span,
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) span,
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color) span,
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) span,
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) span {
     background: transparent !important;
     color: hsl(var(--popover-foreground)) !important;
     border: none !important;
   }
 
-  .dark-editor .sun-editor .se-dropdown button:hover,
-  .dark-editor .sun-editor .se-list-layer button:hover,
-  .dark-editor .sun-editor .se-submenu button:hover,
-  .dark-editor .sun-editor .se-list-basic button:hover,
-  .dark-editor .sun-editor .se-submenu-list button:hover {
+  /* Dark mode hover styles - EXCLUDING color picker buttons */
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button:hover,
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button:hover,
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button:hover,
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button:hover,
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button:hover {
     background: hsl(var(--accent)) !important;
     color: hsl(var(--accent-foreground)) !important;
   }
 
-  .dark-editor .sun-editor .se-dropdown button:hover *,
-  .dark-editor .sun-editor .se-list-layer button:hover *,
-  .dark-editor .sun-editor .se-submenu button:hover *,
-  .dark-editor .sun-editor .se-list-basic button:hover *,
-  .dark-editor .sun-editor .se-submenu-list button:hover * {
+  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button:hover *,
+  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button:hover *,
+  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button:hover *,
+  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button:hover *,
+  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button:hover * {
     color: hsl(var(--accent-foreground)) !important;
   }
 
-  /* Preserve actual colors in color picker submenus - High specificity */
-  .dark-editor .sun-editor .se-list-color button[style*="background-color"],
-  .dark-editor .sun-editor .se-list-color button[style*="background"],
-  .dark-editor .sun-editor .se-list-color [style*="background-color"],
-  .dark-editor .sun-editor .se-list-color [style*="background"],
-  .dark-editor .sun-editor .se-submenu button[style*="background-color"],
-  .dark-editor .sun-editor .se-submenu button[style*="background"],
-  .dark-editor .sun-editor .se-submenu [style*="background-color"],
-  .dark-editor .sun-editor .se-submenu [style*="background"],
-  .dark-editor .sun-editor button[data-value*="#"],
-  .dark-editor .sun-editor [data-value*="#"],
-  .dark-editor .sun-editor .se-color-pallet button,
-  .dark-editor .sun-editor .se-color-pallet [style],
-  .dark-editor .sun-editor .se-list-color button,
-  .dark-editor .sun-editor .se-list-color span,
-  .dark-editor .sun-editor .se-list-color div {
-    color: inherit !important;
-    background-color: inherit !important;
-    background: inherit !important;
-  }
-
-  /* Override any hover effects on color swatches */
-  .dark-editor .sun-editor .se-list-color button:hover[style*="background"],
-  .dark-editor .sun-editor .se-list-color button:hover[style*="background-color"],
-  .dark-editor .sun-editor .se-submenu button:hover[style*="background"],
-  .dark-editor .sun-editor .se-submenu button:hover[style*="background-color"] {
-    background: inherit !important;
-    background-color: inherit !important;
-    color: inherit !important;
-  }
-
-  /* Ensure color picker container has proper dark background */
-  .dark-editor .sun-editor .se-list-color {
+  /* Color picker specific styles - preserve original colors */
+  .dark-editor .sun-editor .se-list-color,
+  .light-editor .sun-editor .se-list-color {
     background: hsl(var(--popover)) !important;
     border: 1px solid hsl(var(--border)) !important;
+    box-shadow: var(--shadow-medium) !important;
+  }
+
+  /* NEVER override color swatches - reset all theme styling */
+  .dark-editor .sun-editor .se-list-color button,
+  .dark-editor .sun-editor .se-list-color *,
+  .light-editor .sun-editor .se-list-color button,
+  .light-editor .sun-editor .se-list-color * {
+    background: unset !important;
+    background-color: unset !important;
+    color: unset !important;
+  }
+
+  /* Reset hover effects on color swatches */
+  .dark-editor .sun-editor .se-list-color button:hover,
+  .dark-editor .sun-editor .se-list-color *:hover,
+  .light-editor .sun-editor .se-list-color button:hover,
+  .light-editor .sun-editor .se-list-color *:hover {
+    background: unset !important;
+    background-color: unset !important;
+    color: unset !important;
   }
 
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
