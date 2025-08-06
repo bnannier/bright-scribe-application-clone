@@ -267,27 +267,23 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       </div>
 
       {/* Editor */}
-      <div className="flex-1 p-4 overflow-hidden">
+      <div className="flex-1 p-4 overflow-hidden flex flex-col">
         <BasicEditor
           content={content}
           onChange={setContent}
           placeholder="Start writing your note..."
-          className="h-full"
+          className="flex-1"
         />
-      </div>
-
-      {/* Footer */}
-      <div className="border-t px-4 py-2 bg-muted/20">
-        <div className="flex items-center justify-between text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <Badge variant="outline" className="flex items-center space-x-1">
-              {getSyncStatusIcon()}
-              <span className="text-xs">{getSyncStatusText()}</span>
-            </Badge>
-            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
-          </div>
-          <div>
+        
+        {/* Footer with sync status and last updated */}
+        <div className="flex items-center justify-between pt-4 border-t mt-4">
+          <Badge variant="outline" className="flex items-center space-x-1">
+            {getSyncStatusIcon()}
+            <span className="text-xs">{getSyncStatusText()}</span>
+          </Badge>
+          <div className="text-sm text-muted-foreground flex items-center gap-2">
             Last updated: {new Date(note.updated_at).toLocaleString()}
+            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
           </div>
         </div>
       </div>
