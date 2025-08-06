@@ -96,7 +96,7 @@ export const useOfflineNotes = () => {
         performSync();
       }
     }
-  }, [offlineStorage, user, loadNotes, performSync, isOnline]);
+  }, [offlineStorage, user, isOnline]); // Removed circular dependencies
 
   // Listen for network restoration
   useEffect(() => {
