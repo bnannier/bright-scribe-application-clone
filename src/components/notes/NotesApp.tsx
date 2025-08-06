@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { useNotebooks } from '@/hooks/useNotebooks';
-import { useNotes } from '@/hooks/useNotes';
+import { useOfflineNotebooks } from '@/hooks/useOfflineNotebooks';
+import { useOfflineNotes } from '@/hooks/useOfflineNotes';
 import { useArchive } from '@/hooks/useArchive';
 import { useTrash } from '@/hooks/useTrash';
 import { NotebookSidebar } from './NotebookSidebar';
@@ -33,8 +33,8 @@ export const NotesApp = () => {
   const saveNotebookEditRef = useRef<(() => Promise<void>) | null>(null);
   const saveNoteEditRef = useRef<(() => Promise<void>) | null>(null);
   
-  const { notebooks, createNotebook, updateNotebook, deleteNotebook, archiveNotebook, refetch: refetchNotebooks } = useNotebooks();
-  const { notes: allNotes, createNote, updateNote, deleteNote, toggleFavorite, archiveNote, refetch: refetchNotes } = useNotes();
+  const { notebooks, createNotebook, updateNotebook, deleteNotebook, archiveNotebook, refetch: refetchNotebooks } = useOfflineNotebooks();
+  const { notes: allNotes, createNote, updateNote, deleteNote, toggleFavorite, archiveNote, refetch: refetchNotes } = useOfflineNotes();
   const { archivedNotes, refetch: refetchArchive } = useArchive();
   const { deletedNotes, deletedNotebooks, emptyTrash, permanentlyDeleteNotebook, permanentlyDeleteNote, refetch: refetchTrash } = useTrash();
   const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
@@ -117,6 +117,7 @@ export const NotesApp = () => {
     
     const notebook = await createNotebook({
       name: 'New Notebook',
+      description: null,
       color: '#6366f1',
     });
     
