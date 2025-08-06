@@ -150,9 +150,6 @@ export const NotebookSidebar: React.FC<NotebookSidebarProps> = ({
         <div className="p-4 space-y-6">
           {/* Quick Filters */}
           <div className="space-y-2">
-            <h2 className="text-sm font-medium text-muted-foreground mb-2">
-              Quick Access
-            </h2>
             <Button
               variant={currentFilter === 'all' ? "default" : "ghost"}
               className="w-full justify-start"
