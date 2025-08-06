@@ -194,15 +194,15 @@
     background: hsl(var(--accent)) !important;
   }
 
-  /* Dark mode dropdown/submenu styles - EXCLUDING color pickers */
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color),
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color),
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color),
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color),
-  .dark-editor .sun-editor .se-selector-table:not(.se-list-color),
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color),
-  .dark-editor .sun-editor .se-list:not(.se-list-color),
-  .dark-editor .sun-editor .se-layer:not(.se-list-color) {
+  /* Dark mode dropdown/submenu styles */
+  .dark-editor .sun-editor .se-dropdown,
+  .dark-editor .sun-editor .se-list-layer,
+  .dark-editor .sun-editor .se-submenu,
+  .dark-editor .sun-editor .se-list-basic,
+  .dark-editor .sun-editor .se-selector-table,
+  .dark-editor .sun-editor .se-submenu-list,
+  .dark-editor .sun-editor .se-list,
+  .dark-editor .sun-editor .se-layer {
     background: hsl(var(--popover)) !important;
     color: hsl(var(--popover-foreground)) !important;
     border: 1px solid hsl(var(--border)) !important;
@@ -210,83 +210,23 @@
     z-index: 50 !important;
   }
 
-  /* Dark mode button styles - EXCLUDING color picker buttons */
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button,
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button,
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button,
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button,
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button,
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) *,
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) *,
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color) *,
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) *,
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) *,
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) span,
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) span,
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color) span,
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) span,
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) span {
+  .dark-editor .sun-editor .se-dropdown button,
+  .dark-editor .sun-editor .se-list-layer button,
+  .dark-editor .sun-editor .se-submenu button,
+  .dark-editor .sun-editor .se-list-basic button,
+  .dark-editor .sun-editor .se-submenu-list button {
     background: transparent !important;
     color: hsl(var(--popover-foreground)) !important;
     border: none !important;
   }
 
-  /* Dark mode hover styles - EXCLUDING color picker buttons */
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button:hover,
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button:hover,
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button:hover,
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button:hover,
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button:hover {
+  .dark-editor .sun-editor .se-dropdown button:hover,
+  .dark-editor .sun-editor .se-list-layer button:hover,
+  .dark-editor .sun-editor .se-submenu button:hover,
+  .dark-editor .sun-editor .se-list-basic button:hover,
+  .dark-editor .sun-editor .se-submenu-list button:hover {
     background: hsl(var(--accent)) !important;
     color: hsl(var(--accent-foreground)) !important;
-  }
-
-  .dark-editor .sun-editor .se-dropdown:not(.se-list-color) button:hover *,
-  .dark-editor .sun-editor .se-list-layer:not(.se-list-color) button:hover *,
-  .dark-editor .sun-editor .se-submenu:not(.se-list-color) button:hover *,
-  .dark-editor .sun-editor .se-list-basic:not(.se-list-color) button:hover *,
-  .dark-editor .sun-editor .se-submenu-list:not(.se-list-color) button:hover * {
-    color: hsl(var(--accent-foreground)) !important;
-  }
-
-  /* Color picker specific styles - preserve original colors */
-  .dark-editor .sun-editor .se-list-color,
-  .light-editor .sun-editor .se-list-color {
-    background: hsl(var(--popover)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    box-shadow: var(--shadow-medium) !important;
-  }
-
-  /* COMPLETELY EXCLUDE COLOR SWATCHES FROM ALL THEME STYLING */
-  .sun-editor .se-list-color,
-  .sun-editor .se-list-color *,
-  .dark-editor .sun-editor .se-list-color,
-  .dark-editor .sun-editor .se-list-color *,
-  .light-editor .sun-editor .se-list-color,
-  .light-editor .sun-editor .se-list-color * {
-    all: unset !important;
-    display: revert !important;
-    box-sizing: revert !important;
-    font-family: revert !important;
-    font-size: revert !important;
-    line-height: revert !important;
-    border-radius: revert !important;
-    cursor: revert !important;
-    margin: revert !important;
-    padding: revert !important;
-    width: revert !important;
-    height: revert !important;
-    min-width: revert !important;
-    min-height: revert !important;
-  }
-
-  /* Specifically for color swatch container */
-  .dark-editor .sun-editor .se-list-color,
-  .light-editor .sun-editor .se-list-color {
-    background: hsl(var(--popover)) !important;
-    border: 1px solid hsl(var(--border)) !important;
-    box-shadow: var(--shadow-medium) !important;
-    border-radius: 6px !important;
   }
 
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
