@@ -236,11 +236,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           </div>
 
           <div className="flex items-center space-x-2">
-            <Badge variant="outline" className="flex items-center space-x-1">
-              {getSyncStatusIcon()}
-              <span className="text-xs">{getSyncStatusText()}</span>
-            </Badge>
-
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon">
@@ -269,12 +264,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end">
-          <div className="text-sm text-muted-foreground flex items-center gap-2">
-            Last updated: {new Date(note.updated_at).toLocaleString()}
-            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
-          </div>
-        </div>
       </div>
 
       {/* Editor */}
@@ -285,6 +274,22 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           placeholder="Start writing your note..."
           className="h-full"
         />
+      </div>
+
+      {/* Footer */}
+      <div className="border-t px-4 py-2 bg-muted/20">
+        <div className="flex items-center justify-between text-sm text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="flex items-center space-x-1">
+              {getSyncStatusIcon()}
+              <span className="text-xs">{getSyncStatusText()}</span>
+            </Badge>
+            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
+          </div>
+          <div>
+            Last updated: {new Date(note.updated_at).toLocaleString()}
+          </div>
+        </div>
       </div>
     </div>
   );
