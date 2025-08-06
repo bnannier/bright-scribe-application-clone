@@ -36,11 +36,18 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Don't interfere with normal keyboard behavior
+    // This handler is just for debugging - remove if not needed
+    console.log('Key pressed:', e.key, 'Repeat:', e.repeat);
+  };
+
   return (
     <div className="w-full">
       <Textarea
         value={content}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         placeholder={placeholder}
         className={`min-h-[400px] resize-none ${className}`}
         disabled={!editable}
