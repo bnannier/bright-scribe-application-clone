@@ -18,28 +18,15 @@ export class SyncManager {
     const syncQueue = await this.offlineStorage.getSyncQueue();
 
     try {
-      // Group operations by table and type
-      const operations = syncQueue.reduce((acc, item) => {
-        const key = `${item.table}-${item.type}`;
-        if (!acc[key]) acc[key] = [];
-        acc[key].push(item);
-        return acc;
-      }, {} as Record<string, any[]>);
-
-      // Process each operation type
-      for (const [key, items] of Object.entries(operations)) {
-        const [table, type] = key.split('-');
-        
-        for (const item of items) {
-          try {
-            await this.processOperation(table as 'notes' | 'notebooks', type as any, item.data);
-            await this.offlineStorage.removeSyncQueueItem(item.id);
-            await this.offlineStorage.markAsSynced(table as any, item.data.id);
-          } catch (error) {
-            console.error(`Sync error for ${key}:`, error);
-            // Handle conflicts - for now, just log them
-            conflicts.push({ item, error: error.message });
-          }
+      // Process operations one by one to prevent data contamination
+      for (const item of syncQueue) {
+        try {
+          await this.processOperation(item.table as 'notes' | 'notebooks', item.type as any, item.data);
+          await this.offlineStorage.removeSyncQueueItem(item.id);
+          await this.offlineStorage.markAsSynced(item.table as any, item.data.id);
+        } catch (error) {
+          console.error(`Sync error for ${item.table}-${item.type}:`, error);
+          conflicts.push({ item, error: error.message });
         }
       }
 
@@ -63,7 +50,7 @@ export class SyncManager {
 
       case 'update':
         // Check for conflicts by comparing timestamps
-        const { data: serverData, error: fetchError } = await supabase
+        const { data: serverRecord, error: fetchError } = await supabase
           .from(tableName)
           .select('updated_at')
           .eq('id', data.id)
@@ -73,8 +60,8 @@ export class SyncManager {
           throw fetchError;
         }
 
-        if (serverData) {
-          const serverTime = new Date(serverData.updated_at);
+        if (serverRecord) {
+          const serverTime = new Date(serverRecord.updated_at);
           const localTime = new Date(data.local_updated_at || data.updated_at);
           
           if (serverTime > localTime) {
@@ -84,10 +71,15 @@ export class SyncManager {
           }
         }
 
+        // Create a clean copy of data without local sync fields for server update
+        const updateData = { ...data };
+        delete (updateData as any).local_updated_at;
+        delete (updateData as any).sync_status;
+        
         const { error: updateError } = await supabase
           .from(tableName)
           .update({
-            ...data,
+            ...updateData,
             updated_at: new Date().toISOString(),
           })
           .eq('id', data.id);
