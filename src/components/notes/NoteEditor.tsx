@@ -42,30 +42,8 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     notebook_id: note.notebook_id,
   });
 
-  // Update state when note prop changes and reset change tracking
-  useEffect(() => {
-    setTitle(note.title);
-    setContent(note.content || '');
-    setSelectedNotebookId(note.notebook_id);
-    setHasUnsavedChanges(false);
-    
-    // Update original values reference
-    originalValuesRef.current = {
-      title: note.title,
-      content: note.content || '',
-      notebook_id: note.notebook_id,
-    };
-  }, [note.id]); // Only trigger when note ID changes
-
-  // Track changes to detect unsaved modifications
-  useEffect(() => {
-    const hasChanges = 
-      title !== originalValuesRef.current.title ||
-      content !== originalValuesRef.current.content ||
-      selectedNotebookId !== originalValuesRef.current.notebook_id;
-    
-    setHasUnsavedChanges(hasChanges);
-  }, [title, content, selectedNotebookId]);
+  // Track previous note ID for navigation detection
+  const previousNoteIdRef = useRef(note.id);
 
   // Autosave function
   const performAutoSave = useCallback(async () => {
@@ -106,6 +84,39 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       setIsSaving(false);
     }
   }, [hasUnsavedChanges, isSaving, title, content, selectedNotebookId, note.id, updateNote]);
+
+  // Update state when note prop changes and reset change tracking
+  useEffect(() => {
+    // Save previous note if there are unsaved changes when switching notes
+    if (previousNoteIdRef.current !== note.id && hasUnsavedChanges) {
+      performAutoSave();
+    }
+    
+    setTitle(note.title);
+    setContent(note.content || '');
+    setSelectedNotebookId(note.notebook_id);
+    setHasUnsavedChanges(false);
+    
+    // Update original values reference
+    originalValuesRef.current = {
+      title: note.title,
+      content: note.content || '',
+      notebook_id: note.notebook_id,
+    };
+
+    // Update previous note ID
+    previousNoteIdRef.current = note.id;
+  }, [note.id, hasUnsavedChanges, performAutoSave]); // Only trigger when note ID changes
+
+  // Track changes to detect unsaved modifications
+  useEffect(() => {
+    const hasChanges = 
+      title !== originalValuesRef.current.title ||
+      content !== originalValuesRef.current.content ||
+      selectedNotebookId !== originalValuesRef.current.notebook_id;
+    
+    setHasUnsavedChanges(hasChanges);
+  }, [title, content, selectedNotebookId]);
 
   // Manual save function
   const handleSave = async () => {
@@ -156,7 +167,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     });
   };
 
-  // Autosave when component unmounts or note changes
+  // Autosave when component unmounts
   useEffect(() => {
     return () => {
       // Perform autosave when component unmounts
@@ -166,24 +177,19 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     };
   }, [hasUnsavedChanges, performAutoSave]);
 
-  // Autosave when navigating away from current note
+  // Handle browser navigation/refresh
   useEffect(() => {
-    const handleBeforeUnload = () => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (hasUnsavedChanges) {
+        e.preventDefault();
+        e.returnValue = '';
         performAutoSave();
       }
     };
 
-    // Save when note ID changes (navigating to different note)
-    const previousNoteId = useRef(note.id);
-    if (previousNoteId.current !== note.id && hasUnsavedChanges) {
-      performAutoSave();
-    }
-    previousNoteId.current = note.id;
-
     window.addEventListener('beforeunload', handleBeforeUnload);
     return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [note.id, hasUnsavedChanges, performAutoSave]);
+  }, [hasUnsavedChanges, performAutoSave]);
 
   const getSyncStatusIcon = () => {
     switch (note.sync_status) {
