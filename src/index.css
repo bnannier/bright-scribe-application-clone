@@ -194,6 +194,59 @@
     background: hsl(var(--accent)) !important;
   }
 
+  /* Dark mode dropdown/submenu styles */
+  .dark-editor .sun-editor .se-dropdown,
+  .dark-editor .sun-editor .se-list-layer,
+  .dark-editor .sun-editor .se-submenu,
+  .dark-editor .sun-editor .se-list-basic,
+  .dark-editor .sun-editor .se-selector-table,
+  .dark-editor .sun-editor .se-submenu-list,
+  .dark-editor .sun-editor .se-list,
+  .dark-editor .sun-editor .se-layer {
+    background: hsl(var(--popover)) !important;
+    color: hsl(var(--popover-foreground)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+    box-shadow: var(--shadow-medium) !important;
+    z-index: 50 !important;
+  }
+
+  .dark-editor .sun-editor .se-dropdown button,
+  .dark-editor .sun-editor .se-list-layer button,
+  .dark-editor .sun-editor .se-submenu button,
+  .dark-editor .sun-editor .se-list-basic button,
+  .dark-editor .sun-editor .se-submenu-list button,
+  .dark-editor .sun-editor .se-dropdown *,
+  .dark-editor .sun-editor .se-list-layer *,
+  .dark-editor .sun-editor .se-submenu *,
+  .dark-editor .sun-editor .se-list-basic *,
+  .dark-editor .sun-editor .se-submenu-list *,
+  .dark-editor .sun-editor .se-dropdown span,
+  .dark-editor .sun-editor .se-list-layer span,
+  .dark-editor .sun-editor .se-submenu span,
+  .dark-editor .sun-editor .se-list-basic span,
+  .dark-editor .sun-editor .se-submenu-list span {
+    background: transparent !important;
+    color: hsl(var(--popover-foreground)) !important;
+    border: none !important;
+  }
+
+  .dark-editor .sun-editor .se-dropdown button:hover,
+  .dark-editor .sun-editor .se-list-layer button:hover,
+  .dark-editor .sun-editor .se-submenu button:hover,
+  .dark-editor .sun-editor .se-list-basic button:hover,
+  .dark-editor .sun-editor .se-submenu-list button:hover {
+    background: hsl(var(--accent)) !important;
+    color: hsl(var(--accent-foreground)) !important;
+  }
+
+  .dark-editor .sun-editor .se-dropdown button:hover *,
+  .dark-editor .sun-editor .se-list-layer button:hover *,
+  .dark-editor .sun-editor .se-submenu button:hover *,
+  .dark-editor .sun-editor .se-list-basic button:hover *,
+  .dark-editor .sun-editor .se-submenu-list button:hover * {
+    color: hsl(var(--accent-foreground)) !important;
+  }
+
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
   .dark-editor .sun-editor .se-wrapper-wysiwyg,
   .dark-editor .sun-editor .se-wrapper-inner,
