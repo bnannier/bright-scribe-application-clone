@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import SunEditor from 'suneditor-react';
 import 'suneditor/dist/css/suneditor.min.css';
 import { useTheme } from 'next-themes';
@@ -23,6 +23,7 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
   maxLength = 100000, // 100KB character limit
 }) => {
   const { theme } = useTheme();
+  
   const sanitizeContent = (text: string): string => {
     // Remove potentially harmful scripts and HTML
     return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -30,6 +31,34 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
                .replace(/javascript:/gi, '')
                .replace(/on\w+\s*=/gi, '');
   };
+
+  // Add !important to color swatch buttons after SunEditor mounts
+  useEffect(() => {
+    const addImportantToColorSwatches = () => {
+      const colorButtons = document.querySelectorAll('.se-wrapper .se-btn-module[data-value]');
+      colorButtons.forEach((button) => {
+        const htmlButton = button as HTMLElement;
+        const style = htmlButton.style.backgroundColor;
+        if (style && !style.includes('!important')) {
+          htmlButton.style.setProperty('background-color', style, 'important');
+        }
+      });
+    };
+
+    // Run immediately and on mutation changes
+    const timer = setTimeout(addImportantToColorSwatches, 100);
+    
+    const observer = new MutationObserver(addImportantToColorSwatches);
+    const editorWrapper = document.querySelector('.se-wrapper');
+    if (editorWrapper) {
+      observer.observe(editorWrapper, { childList: true, subtree: true });
+    }
+
+    return () => {
+      clearTimeout(timer);
+      observer.disconnect();
+    };
+  }, []);
 
   return (
     <div className={`w-full h-full flex flex-col ${theme === 'dark' ? 'dark-editor' : 'light-editor'}`}>
