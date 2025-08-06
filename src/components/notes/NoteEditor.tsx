@@ -185,10 +185,10 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           <div className="flex items-center space-x-2">
             {/* Notebook Dropdown styled like title */}
             <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
-              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-lg font-medium text-muted-foreground hover:text-foreground transition-colors w-auto">
+              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-xl font-semibold text-muted-foreground hover:text-foreground transition-colors w-auto">
                 <div className="flex items-center gap-2 whitespace-nowrap">
                   <Folder className="h-4 w-4 flex-shrink-0" />
-                  <SelectValue placeholder="No Notebook" />
+                  <SelectValue placeholder="No Notebook" className="text-xl font-semibold" />
                 </div>
               </SelectTrigger>
               <SelectContent>
