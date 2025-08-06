@@ -45,118 +45,24 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
   // Track previous note ID for navigation detection
   const previousNoteIdRef = useRef(note.id);
 
-  // Autosave function
-  const performAutoSave = useCallback(async () => {
-    if (!hasUnsavedChanges || isSaving) return false;
 
-    // Validate title
-    if (!title.trim()) {
-      return false;
-    }
-    
-    if (title.length > MAX_TITLE_LENGTH) {
-      return false;
-    }
-
-    setIsSaving(true);
-    try {
-      const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
-      
-      await updateNote(note.id, {
-        title: sanitizedTitle,
-        content,
-        notebook_id: selectedNotebookId,
-      });
-
-      // Update original values after successful save
-      originalValuesRef.current = {
-        title: sanitizedTitle,
-        content,
-        notebook_id: selectedNotebookId,
-      };
-      
-      setHasUnsavedChanges(false);
-      return true;
-    } catch (error) {
-      console.error('Autosave failed:', error);
-      return false;
-    } finally {
-      setIsSaving(false);
-    }
-  }, [hasUnsavedChanges, isSaving, title, content, selectedNotebookId, note.id, updateNote]);
-
-  // Update state when note prop changes and reset change tracking
+  // Update state when note prop changes
   useEffect(() => {
-    const currentNoteId = note.id;
-    const prevNoteId = previousNoteIdRef.current;
+    setTitle(note.title);
+    setContent(note.content || '');
+    setSelectedNotebookId(note.notebook_id);
+    setHasUnsavedChanges(false);
     
-    // Save current note if there are unsaved changes when switching notes
-    if (prevNoteId && prevNoteId !== currentNoteId && hasUnsavedChanges) {
-      // Perform autosave first, then navigate
-      (async () => {
-        try {
-          // Autosave current note with current values
-          const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
-          await updateNote(prevNoteId, {
-            title: sanitizedTitle,
-            content,
-            notebook_id: selectedNotebookId,
-          });
-          
-          // Refresh current content after save
-          setTitle(sanitizedTitle);
-          setContent(content);
-          setSelectedNotebookId(selectedNotebookId);
-          
-          // Wait a moment for UI to update
-          setTimeout(() => {
-            // Now update state for new note
-            setTitle(note.title);
-            setContent(note.content || '');
-            setSelectedNotebookId(note.notebook_id);
-            setHasUnsavedChanges(false);
-            
-            // Update original values reference
-            originalValuesRef.current = {
-              title: note.title,
-              content: note.content || '',
-              notebook_id: note.notebook_id,
-            };
-          }, 100);
-          
-        } catch (error) {
-          console.error('Failed to save previous note:', error);
-          // Still navigate to new note even if save failed
-          setTitle(note.title);
-          setContent(note.content || '');
-          setSelectedNotebookId(note.notebook_id);
-          setHasUnsavedChanges(false);
-          
-          originalValuesRef.current = {
-            title: note.title,
-            content: note.content || '',
-            notebook_id: note.notebook_id,
-          };
-        }
-      })();
-    } else {
-      // No unsaved changes, directly update state for new note
-      setTitle(note.title);
-      setContent(note.content || '');
-      setSelectedNotebookId(note.notebook_id);
-      setHasUnsavedChanges(false);
-      
-      // Update original values reference
-      originalValuesRef.current = {
-        title: note.title,
-        content: note.content || '',
-        notebook_id: note.notebook_id,
-      };
-    }
+    // Update original values reference
+    originalValuesRef.current = {
+      title: note.title,
+      content: note.content || '',
+      notebook_id: note.notebook_id,
+    };
 
     // Update previous note ID
-    previousNoteIdRef.current = currentNoteId;
-  }, [note.id]); // Only depend on note.id to avoid circular dependencies
+    previousNoteIdRef.current = note.id;
+  }, [note.id]);
 
   // Track changes to detect unsaved modifications
   useEffect(() => {
@@ -189,12 +95,37 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       return;
     }
 
-    const success = await performAutoSave();
-    if (success) {
+    setIsSaving(true);
+    try {
+      const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+      
+      await updateNote(note.id, {
+        title: sanitizedTitle,
+        content,
+        notebook_id: selectedNotebookId,
+      });
+
+      // Update original values after successful save
+      originalValuesRef.current = {
+        title: sanitizedTitle,
+        content,
+        notebook_id: selectedNotebookId,
+      };
+      
+      setHasUnsavedChanges(false);
       toast({
         title: "Note saved",
         description: "Your note has been saved successfully.",
       });
+    } catch (error) {
+      console.error('Save failed:', error);
+      toast({
+        variant: "destructive",
+        title: "Save failed",
+        description: "Failed to save the note. Please try again.",
+      });
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -217,29 +148,6 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     });
   };
 
-  // Autosave when component unmounts
-  useEffect(() => {
-    return () => {
-      // Perform autosave when component unmounts
-      if (hasUnsavedChanges) {
-        performAutoSave();
-      }
-    };
-  }, [hasUnsavedChanges, performAutoSave]);
-
-  // Handle browser navigation/refresh
-  useEffect(() => {
-    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-      if (hasUnsavedChanges) {
-        e.preventDefault();
-        e.returnValue = '';
-        performAutoSave();
-      }
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
-  }, [hasUnsavedChanges, performAutoSave]);
 
   const getSyncStatusIcon = () => {
     switch (note.sync_status) {
