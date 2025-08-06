@@ -88,10 +88,35 @@ export const useOfflineNotes = () => {
     }
   }, [syncManager, user, isOnline, isSyncing, loadNotes]);
 
-  // Initial load and sync
+  // Initial load and sync with conflict resolution
   useEffect(() => {
     if (offlineStorage && user) {
-      loadNotes();
+      const loadAndFixConflicts = async () => {
+        await loadNotes();
+        
+        // Check for notes that need conflict resolution
+        const allNotes = await offlineStorage.getAllNotes(user.id);
+        const notesToFix = allNotes.filter(note => {
+          return note.sync_status === 'pending' && 
+                 note.local_updated_at && 
+                 note.updated_at &&
+                 new Date(note.updated_at) > new Date(note.local_updated_at);
+        });
+        
+        // Fix notes where server version is newer
+        for (const note of notesToFix) {
+          console.log('🔧 Fixing note with server conflict:', note.id);
+          await offlineStorage.markAsSynced('notes', note.id);
+        }
+        
+        // Reload notes after fixing conflicts
+        if (notesToFix.length > 0) {
+          await loadNotes();
+        }
+      };
+      
+      loadAndFixConflicts();
+      
       if (isOnline) {
         performSync();
       }
@@ -155,6 +180,7 @@ export const useOfflineNotes = () => {
   }, [offlineStorage, user, isOnline, loadNotes]);
 
   const updateNote = useCallback(async (id: string, updates: Partial<OfflineNote>) => {
+    console.log('🔄 updateNote called for:', id, 'with updates:', updates);
     if (!offlineStorage || !user) return null;
 
     try {
@@ -254,6 +280,79 @@ export const useOfflineNotes = () => {
     return deleteNote(id);
   }, [deleteNote]);
 
+  // Function to refresh a specific note from server
+  const refreshNote = useCallback(async (noteId: string) => {
+    if (!offlineStorage || !user || !isOnline) return null;
+
+    try {
+      const { data, error } = await supabase
+        .from('notes')
+        .select('*')
+        .eq('id', noteId)
+        .eq('user_id', user.id)
+        .single();
+
+      if (error) {
+        console.error('Failed to refresh note:', error);
+        return null;
+      }
+
+      // Update local storage directly and mark as synced
+      const noteData = { ...data, sync_status: 'synced' as const };
+      delete (noteData as any).local_updated_at; // Remove local timestamp
+      await offlineStorage.updateNoteDirectly(noteData);
+      await loadNotes();
+      
+      return data;
+    } catch (error) {
+      console.error('Failed to refresh note:', error);
+      return null;
+    }
+  }, [offlineStorage, user, isOnline, loadNotes]);
+
+  // Function to resolve sync conflicts manually
+  const resolveSyncConflicts = useCallback(async () => {
+    if (!offlineStorage || !user || !isOnline) return;
+
+    try {
+      // Get all pending notes
+      const pendingNotes = await offlineStorage.getPendingItems('notes');
+      let resolved = 0;
+
+      for (const localNote of pendingNotes) {
+        // Check server version
+        const { data: serverNote, error } = await supabase
+          .from('notes')
+          .select('*')
+          .eq('id', localNote.id)
+          .eq('user_id', user.id)
+          .single();
+
+        if (!error && serverNote) {
+          const serverDate = new Date(serverNote.updated_at);
+          const localDate = new Date(localNote.local_updated_at || localNote.updated_at);
+
+          if (serverDate > localDate) {
+            // Server version is newer, accept it
+            await offlineStorage.saveNote({ ...serverNote, sync_status: 'synced' });
+            await offlineStorage.clearSyncQueueForItem('notes', localNote.id);
+            resolved++;
+          }
+        }
+      }
+
+      if (resolved > 0) {
+        await loadNotes();
+        toast.success(`Resolved ${resolved} sync conflicts`);
+      } else {
+        toast.info('No sync conflicts to resolve');
+      }
+    } catch (error) {
+      console.error('Failed to resolve sync conflicts:', error);
+      toast.error('Failed to resolve sync conflicts');
+    }
+  }, [offlineStorage, user, isOnline, loadNotes]);
+
   return {
     notes,
     loading,
@@ -262,6 +361,8 @@ export const useOfflineNotes = () => {
     deleteNote,
     toggleFavorite,
     archiveNote,
+    refreshNote,
+    resolveSyncConflicts,
     performSync,
     isSyncing,
     isOnline,
