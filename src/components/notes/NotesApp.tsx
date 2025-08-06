@@ -409,7 +409,7 @@ export const NotesApp = () => {
           selectedNotebookId={selectedNotebookId}
           currentFilter={currentFilter}
           newlyCreatedNotebookId={newlyCreatedNotebookId}
-          onSelectNotebook={setSelectedNotebookId}
+          onSelectNotebook={handleSelectNotebook}
           onCreateNotebook={handleCreateNotebook}
           onFilterChange={handleFilterChange}
           onRenameNotebook={handleRenameNotebook}
