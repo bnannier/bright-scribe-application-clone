@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { OfflineNote, useOfflineNotes } from '@/hooks/useOfflineNotes';
 import { OfflineNotebook } from '@/hooks/useOfflineNotebooks';
 import { BasicEditor } from '@/components/editor/BasicEditor';
@@ -28,17 +28,86 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
   const [title, setTitle] = useState(note.title);
   const [content, setContent] = useState<string>(note.content || '');
   const [selectedNotebookId, setSelectedNotebookId] = useState(note.notebook_id);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   
   const MAX_TITLE_LENGTH = 200;
   const { updateNote, toggleFavorite, archiveNote } = useOfflineNotes();
   const { toast } = useToast();
 
+  // Track original values to detect changes
+  const originalValuesRef = useRef({
+    title: note.title,
+    content: note.content || '',
+    notebook_id: note.notebook_id,
+  });
+
+  // Update state when note prop changes and reset change tracking
   useEffect(() => {
     setTitle(note.title);
     setContent(note.content || '');
     setSelectedNotebookId(note.notebook_id);
-  }, [note]);
+    setHasUnsavedChanges(false);
+    
+    // Update original values reference
+    originalValuesRef.current = {
+      title: note.title,
+      content: note.content || '',
+      notebook_id: note.notebook_id,
+    };
+  }, [note.id]); // Only trigger when note ID changes
 
+  // Track changes to detect unsaved modifications
+  useEffect(() => {
+    const hasChanges = 
+      title !== originalValuesRef.current.title ||
+      content !== originalValuesRef.current.content ||
+      selectedNotebookId !== originalValuesRef.current.notebook_id;
+    
+    setHasUnsavedChanges(hasChanges);
+  }, [title, content, selectedNotebookId]);
+
+  // Autosave function
+  const performAutoSave = useCallback(async () => {
+    if (!hasUnsavedChanges || isSaving) return false;
+
+    // Validate title
+    if (!title.trim()) {
+      return false;
+    }
+    
+    if (title.length > MAX_TITLE_LENGTH) {
+      return false;
+    }
+
+    setIsSaving(true);
+    try {
+      const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+      
+      await updateNote(note.id, {
+        title: sanitizedTitle,
+        content,
+        notebook_id: selectedNotebookId,
+      });
+
+      // Update original values after successful save
+      originalValuesRef.current = {
+        title: sanitizedTitle,
+        content,
+        notebook_id: selectedNotebookId,
+      };
+      
+      setHasUnsavedChanges(false);
+      return true;
+    } catch (error) {
+      console.error('Autosave failed:', error);
+      return false;
+    } finally {
+      setIsSaving(false);
+    }
+  }, [hasUnsavedChanges, isSaving, title, content, selectedNotebookId, note.id, updateNote]);
+
+  // Manual save function
   const handleSave = async () => {
     // Validate title
     if (!title.trim()) {
@@ -59,15 +128,8 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       return;
     }
 
-    const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
-    
-    const updated = await updateNote(note.id, {
-      title: sanitizedTitle,
-      content,
-      notebook_id: selectedNotebookId,
-    });
-
-    if (updated) {
+    const success = await performAutoSave();
+    if (success) {
       toast({
         title: "Note saved",
         description: "Your note has been saved successfully.",
@@ -93,6 +155,35 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       description: "This feature will be available soon!",
     });
   };
+
+  // Autosave when component unmounts or note changes
+  useEffect(() => {
+    return () => {
+      // Perform autosave when component unmounts
+      if (hasUnsavedChanges) {
+        performAutoSave();
+      }
+    };
+  }, [hasUnsavedChanges, performAutoSave]);
+
+  // Autosave when navigating away from current note
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (hasUnsavedChanges) {
+        performAutoSave();
+      }
+    };
+
+    // Save when note ID changes (navigating to different note)
+    const previousNoteId = useRef(note.id);
+    if (previousNoteId.current !== note.id && hasUnsavedChanges) {
+      performAutoSave();
+    }
+    previousNoteId.current = note.id;
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [note.id, hasUnsavedChanges, performAutoSave]);
 
   const getSyncStatusIcon = () => {
     switch (note.sync_status) {
@@ -182,8 +273,12 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button onClick={handleSave}>
-              Save
+            <Button 
+              onClick={handleSave}
+              disabled={!hasUnsavedChanges || isSaving}
+              variant={hasUnsavedChanges ? "default" : "outline"}
+            >
+              {isSaving ? "Saving..." : hasUnsavedChanges ? "Save" : "Saved"}
             </Button>
           </div>
         </div>
@@ -205,8 +300,9 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
             </Select>
           </div>
 
-          <div className="text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground flex items-center gap-2">
             Last updated: {new Date(note.updated_at).toLocaleString()}
+            {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
           </div>
         </div>
       </div>
