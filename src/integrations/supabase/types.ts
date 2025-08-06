@@ -222,6 +222,7 @@ export type Database = {
           google_drive_file_id: string | null
           id: string
           is_favorite: boolean
+          local_updated_at: string | null
           notebook_id: string | null
           sync_status: string
           title: string
@@ -234,6 +235,7 @@ export type Database = {
           google_drive_file_id?: string | null
           id?: string
           is_favorite?: boolean
+          local_updated_at?: string | null
           notebook_id?: string | null
           sync_status?: string
           title?: string
@@ -246,6 +248,7 @@ export type Database = {
           google_drive_file_id?: string | null
           id?: string
           is_favorite?: boolean
+          local_updated_at?: string | null
           notebook_id?: string | null
           sync_status?: string
           title?: string
