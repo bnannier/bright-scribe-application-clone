@@ -65,8 +65,9 @@ export class SyncManager {
           const localTime = new Date(data.local_updated_at || data.updated_at);
           
           if (serverTime > localTime) {
-            // Server version is newer, skip this update (server wins)
-            console.log(`Skipping update for ${data.id}: server version is newer`);
+            // Server version is newer, mark as synced to resolve conflict
+            console.info(`Server version is newer for ${data.id}, resolving conflict by accepting server version`);
+            await this.offlineStorage.markAsSynced(table, data.id);
             return;
           }
         }
