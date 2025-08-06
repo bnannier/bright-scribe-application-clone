@@ -106,7 +106,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
 
     // Update previous note ID
     previousNoteIdRef.current = note.id;
-  }, [note.id, hasUnsavedChanges, performAutoSave]); // Only trigger when note ID changes
+  }, [note.id]); // Only trigger when note ID changes - removed circular dependencies
 
   // Track changes to detect unsaved modifications
   useEffect(() => {
