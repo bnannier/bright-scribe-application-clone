@@ -1,6 +1,7 @@
 import React from 'react';
 import SunEditor from 'suneditor-react';
 import 'suneditor/dist/css/suneditor.min.css';
+import { useTheme } from 'next-themes';
 
 interface BasicEditorProps {
   content?: string;
@@ -19,6 +20,7 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
   editable = true,
   maxLength = 100000, // 100KB character limit
 }) => {
+  const { theme } = useTheme();
   const sanitizeContent = (text: string): string => {
     // Remove potentially harmful scripts and HTML
     return text.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
@@ -28,7 +30,7 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
   };
 
   return (
-    <div className="w-full">
+    <div className={`w-full ${theme === 'dark' ? 'dark-editor' : 'light-editor'}`}>
       <SunEditor
         setContents={content}
         onChange={(content) => {
