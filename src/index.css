@@ -247,17 +247,35 @@
     color: hsl(var(--accent-foreground)) !important;
   }
 
-  /* Preserve actual colors in color picker submenus */
-  .dark-editor .sun-editor .se-list-color,
-  .dark-editor .sun-editor .se-list-color *,
+  /* Preserve actual colors in color picker submenus - High specificity */
+  .dark-editor .sun-editor .se-list-color button[style*="background-color"],
+  .dark-editor .sun-editor .se-list-color button[style*="background"],
+  .dark-editor .sun-editor .se-list-color [style*="background-color"],
+  .dark-editor .sun-editor .se-list-color [style*="background"],
+  .dark-editor .sun-editor .se-submenu button[style*="background-color"],
+  .dark-editor .sun-editor .se-submenu button[style*="background"],
+  .dark-editor .sun-editor .se-submenu [style*="background-color"],
+  .dark-editor .sun-editor .se-submenu [style*="background"],
+  .dark-editor .sun-editor button[data-value*="#"],
   .dark-editor .sun-editor [data-value*="#"],
-  .dark-editor .sun-editor [style*="background-color"],
-  .dark-editor .sun-editor .se-color-pallet,
-  .dark-editor .sun-editor .se-color-pallet *,
-  .dark-editor .sun-editor button[data-value*="color"],
-  .dark-editor .sun-editor button[style*="background-color"] {
+  .dark-editor .sun-editor .se-color-pallet button,
+  .dark-editor .sun-editor .se-color-pallet [style],
+  .dark-editor .sun-editor .se-list-color button,
+  .dark-editor .sun-editor .se-list-color span,
+  .dark-editor .sun-editor .se-list-color div {
     color: inherit !important;
     background-color: inherit !important;
+    background: inherit !important;
+  }
+
+  /* Override any hover effects on color swatches */
+  .dark-editor .sun-editor .se-list-color button:hover[style*="background"],
+  .dark-editor .sun-editor .se-list-color button:hover[style*="background-color"],
+  .dark-editor .sun-editor .se-submenu button:hover[style*="background"],
+  .dark-editor .sun-editor .se-submenu button:hover[style*="background-color"] {
+    background: inherit !important;
+    background-color: inherit !important;
+    color: inherit !important;
   }
 
   /* Ensure color picker container has proper dark background */
