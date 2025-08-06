@@ -200,9 +200,12 @@ export const NotesList: React.FC<NotesListProps> = ({
   const getPreviewText = useCallback((content: any) => {
     if (!content) return 'No content';
     
-    // Handle string content
+    // Handle string content - strip HTML tags
     if (typeof content === 'string') {
-      return content.slice(0, 100) + (content.length > 100 ? '...' : '');
+      // Remove HTML tags and decode HTML entities
+      const stripped = content.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ');
+      const cleaned = stripped.replace(/\s+/g, ' ').trim();
+      return cleaned.slice(0, 100) + (cleaned.length > 100 ? '...' : '');
     }
     
     // Extract text from TipTap content
