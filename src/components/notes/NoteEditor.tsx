@@ -87,27 +87,27 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
 
   // Update state when note prop changes and reset change tracking
   useEffect(() => {
+    const currentNoteId = note.id;
+    const prevNoteId = previousNoteIdRef.current;
+    
     // Save previous note if there are unsaved changes when switching notes
-    if (previousNoteIdRef.current !== note.id && hasUnsavedChanges && previousNoteIdRef.current) {
-      // Use the previous note ID to ensure we're saving to the correct note
-      const previousNoteId = previousNoteIdRef.current;
-      const currentTitle = title;
-      const currentContent = content;
-      const currentNotebookId = selectedNotebookId;
+    if (prevNoteId && prevNoteId !== currentNoteId && hasUnsavedChanges) {
+      // Capture current values before state reset
+      const prevTitle = title;
+      const prevContent = content;
+      const prevNotebookId = selectedNotebookId;
       
-      // Perform save with the previous note's ID and current editor state
-      updateNote(previousNoteId, {
-        title: currentTitle.replace(/<[^>]*>/g, '').trim(),
-        content: currentContent,
-        notebook_id: currentNotebookId,
+      // Perform save with the previous note's ID
+      updateNote(prevNoteId, {
+        title: prevTitle.replace(/<[^>]*>/g, '').trim(),
+        content: prevContent,
+        notebook_id: prevNotebookId,
       }).catch((error) => {
         console.error('Failed to save previous note:', error);
       });
     }
     
-    // Update previous note ID BEFORE updating state
-    previousNoteIdRef.current = note.id;
-    
+    // Update state for new note
     setTitle(note.title);
     setContent(note.content || '');
     setSelectedNotebookId(note.notebook_id);
@@ -119,7 +119,10 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       content: note.content || '',
       notebook_id: note.notebook_id,
     };
-  }, [note.id, title, content, selectedNotebookId, hasUnsavedChanges, updateNote]); // Include dependencies for the save operation
+
+    // Update previous note ID
+    previousNoteIdRef.current = currentNoteId;
+  }, [note.id]); // Only depend on note.id to avoid circular dependencies
 
   // Track changes to detect unsaved modifications
   useEffect(() => {
