@@ -417,30 +417,34 @@ export const NotesApp = () => {
       {/* Notes List - Hidden on mobile and tablet, shown on desktop */}
       <div className="hidden lg:block w-80 border-r bg-background">
         <div className="p-4 border-b flex items-center justify-between gap-2">
-          {/* Hierarchical navigation back button */}
-          {showBackButton && (
-            <Button variant="ghost" size="sm" onClick={handleBackClick}>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-          )}
+          <div>
+            {/* Hierarchical navigation back button */}
+            {showBackButton && (
+              <Button variant="ghost" size="sm" onClick={handleBackClick}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
           
-          {currentFilter === 'trash' && (
-            (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
-            (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
-          ) && (
-            <Button 
-              variant="destructive" 
-              size="sm" 
-              onClick={() => setShowEmptyTrashConfirm(true)}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          )}
-          {currentFilter !== 'trash' && currentFilter !== 'archived' && (
-            <Button variant="outline" size="icon" onClick={handleCreateNote} className="rounded-full h-[36px] w-[36px]">
-              <Pen className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {currentFilter === 'trash' && (
+              (selectedTrashNotebookId && deletedNotebooks.find(nb => nb.original_notebook_id === selectedTrashNotebookId)) ||
+              (!selectedTrashNotebookId && ((deletedNotes?.length ?? 0) > 0 || (deletedNotebooks?.length ?? 0) > 0))
+            ) && (
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                onClick={() => setShowEmptyTrashConfirm(true)}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+            {currentFilter !== 'trash' && currentFilter !== 'archived' && (
+              <Button variant="outline" size="icon" onClick={handleCreateNote} className="rounded-full h-[36px] w-[36px]">
+                <Pen className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
         </div>
         
         {/* Show either trash view or notes */}
