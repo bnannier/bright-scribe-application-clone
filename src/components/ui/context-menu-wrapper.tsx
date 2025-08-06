@@ -38,8 +38,8 @@ export const ContextMenuWrapper: React.FC<ContextMenuWrapperProps> = ({
     longPressTimer.current = setTimeout(() => {
       setIsLongPress(true);
       setShowMenu(true);
-      // Prevent default to avoid text selection
-      e.preventDefault();
+      // Note: Cannot call preventDefault here as the event is stale
+      // The preventDefault is moved to touch handling if needed
     }, 500); // 500ms for long press
   };
 
