@@ -1,7 +1,11 @@
 import { UserAvatar } from '@/components/UserAvatar';
 import { NotesApp } from '@/components/notes/NotesApp';
+import { OfflineIndicator } from '@/components/ui/offline-indicator';
+import { useOfflineNotes } from '@/hooks/useOfflineNotes';
 
 const Index = () => {
+  const { performSync, isSyncing } = useOfflineNotes();
+
   return (
     <div className="h-screen bg-background flex flex-col">
       {/* Header */}
@@ -18,6 +22,7 @@ const Index = () => {
           
           {/* User Avatar - always on the right */}
           <div className="flex items-center gap-4">
+            <OfflineIndicator onSync={performSync} isSyncing={isSyncing} />
             <UserAvatar />
           </div>
         </div>
