@@ -181,7 +181,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     <div className="h-full flex flex-col">
       {/* Header */}
       <div className="border-b p-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between -my-0.5">
           <div className="flex items-center space-x-2">
             {/* Notebook Dropdown styled like title */}
             <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
