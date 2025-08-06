@@ -90,35 +90,69 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
     const currentNoteId = note.id;
     const prevNoteId = previousNoteIdRef.current;
     
-    // Save previous note if there are unsaved changes when switching notes
+    // Save current note if there are unsaved changes when switching notes
     if (prevNoteId && prevNoteId !== currentNoteId && hasUnsavedChanges) {
-      // Capture current values before state reset
-      const prevTitle = title;
-      const prevContent = content;
-      const prevNotebookId = selectedNotebookId;
+      // Perform autosave first, then navigate
+      (async () => {
+        try {
+          // Autosave current note with current values
+          const sanitizedTitle = title.replace(/<[^>]*>/g, '').trim();
+          await updateNote(prevNoteId, {
+            title: sanitizedTitle,
+            content,
+            notebook_id: selectedNotebookId,
+          });
+          
+          // Refresh current content after save
+          setTitle(sanitizedTitle);
+          setContent(content);
+          setSelectedNotebookId(selectedNotebookId);
+          
+          // Wait a moment for UI to update
+          setTimeout(() => {
+            // Now update state for new note
+            setTitle(note.title);
+            setContent(note.content || '');
+            setSelectedNotebookId(note.notebook_id);
+            setHasUnsavedChanges(false);
+            
+            // Update original values reference
+            originalValuesRef.current = {
+              title: note.title,
+              content: note.content || '',
+              notebook_id: note.notebook_id,
+            };
+          }, 100);
+          
+        } catch (error) {
+          console.error('Failed to save previous note:', error);
+          // Still navigate to new note even if save failed
+          setTitle(note.title);
+          setContent(note.content || '');
+          setSelectedNotebookId(note.notebook_id);
+          setHasUnsavedChanges(false);
+          
+          originalValuesRef.current = {
+            title: note.title,
+            content: note.content || '',
+            notebook_id: note.notebook_id,
+          };
+        }
+      })();
+    } else {
+      // No unsaved changes, directly update state for new note
+      setTitle(note.title);
+      setContent(note.content || '');
+      setSelectedNotebookId(note.notebook_id);
+      setHasUnsavedChanges(false);
       
-      // Perform save with the previous note's ID
-      updateNote(prevNoteId, {
-        title: prevTitle.replace(/<[^>]*>/g, '').trim(),
-        content: prevContent,
-        notebook_id: prevNotebookId,
-      }).catch((error) => {
-        console.error('Failed to save previous note:', error);
-      });
+      // Update original values reference
+      originalValuesRef.current = {
+        title: note.title,
+        content: note.content || '',
+        notebook_id: note.notebook_id,
+      };
     }
-    
-    // Update state for new note
-    setTitle(note.title);
-    setContent(note.content || '');
-    setSelectedNotebookId(note.notebook_id);
-    setHasUnsavedChanges(false);
-    
-    // Update original values reference
-    originalValuesRef.current = {
-      title: note.title,
-      content: note.content || '',
-      notebook_id: note.notebook_id,
-    };
 
     // Update previous note ID
     previousNoteIdRef.current = currentNoteId;
