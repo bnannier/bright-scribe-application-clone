@@ -14,7 +14,9 @@ import {
   Download,
   CloudOff,
   Cloud,
-  CloudUpload
+  CloudUpload,
+  ChevronDown,
+  Folder
 } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
@@ -181,6 +183,28 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       <div className="border-b p-4 space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
+            {/* Notebook Dropdown styled like title */}
+            <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
+              <SelectTrigger className="border-none shadow-none p-0 h-auto bg-transparent text-lg font-medium text-muted-foreground hover:text-foreground transition-colors w-auto">
+                <div className="flex items-center gap-2">
+                  <Folder className="h-4 w-4" />
+                  <SelectValue placeholder="No Notebook" />
+                  <ChevronDown className="h-3 w-3" />
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="no-notebook">No Notebook</SelectItem>
+                {notebooks.map((notebook) => (
+                  <SelectItem key={notebook.id} value={notebook.id}>
+                    {notebook.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Folder break */}
+            <span className="text-muted-foreground/50">/</span>
+            
             <Input
               value={title}
               onChange={(e) => {
@@ -247,23 +271,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
-          <div className="flex-1">
-            <Select value={selectedNotebookId || 'no-notebook'} onValueChange={(value) => setSelectedNotebookId(value === 'no-notebook' ? null : value)}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select notebook" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="no-notebook">No Notebook</SelectItem>
-                {notebooks.map((notebook) => (
-                  <SelectItem key={notebook.id} value={notebook.id}>
-                    {notebook.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
+        <div className="flex items-center justify-end">
           <div className="text-sm text-muted-foreground flex items-center gap-2">
             Last updated: {new Date(note.updated_at).toLocaleString()}
             {hasUnsavedChanges && <span className="text-orange-500">• Unsaved changes</span>}
