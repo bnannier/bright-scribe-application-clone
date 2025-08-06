@@ -247,6 +247,25 @@
     color: hsl(var(--accent-foreground)) !important;
   }
 
+  /* Preserve actual colors in color picker submenus */
+  .dark-editor .sun-editor .se-list-color,
+  .dark-editor .sun-editor .se-list-color *,
+  .dark-editor .sun-editor [data-value*="#"],
+  .dark-editor .sun-editor [style*="background-color"],
+  .dark-editor .sun-editor .se-color-pallet,
+  .dark-editor .sun-editor .se-color-pallet *,
+  .dark-editor .sun-editor button[data-value*="color"],
+  .dark-editor .sun-editor button[style*="background-color"] {
+    color: inherit !important;
+    background-color: inherit !important;
+  }
+
+  /* Ensure color picker container has proper dark background */
+  .dark-editor .sun-editor .se-list-color {
+    background: hsl(var(--popover)) !important;
+    border: 1px solid hsl(var(--border)) !important;
+  }
+
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
   .dark-editor .sun-editor .se-wrapper-wysiwyg,
   .dark-editor .sun-editor .se-wrapper-inner,
