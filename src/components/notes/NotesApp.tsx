@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useOfflineNotebooks } from '@/hooks/useOfflineNotebooks';
 import { useOfflineNotes } from '@/hooks/useOfflineNotes';
 import { useArchive } from '@/hooks/useArchive';
@@ -38,6 +38,19 @@ export const NotesApp = () => {
   const { archivedNotes, refetch: refetchArchive } = useArchive();
   const { deletedNotes, deletedNotebooks, emptyTrash, permanentlyDeleteNotebook, permanentlyDeleteNote, refetch: refetchTrash } = useTrash();
   const [showEmptyTrashConfirm, setShowEmptyTrashConfirm] = useState(false);
+
+  // Auto-switch to notes view on mobile when searching
+  useEffect(() => {
+    const isMobileOrTablet = window.innerWidth < 1024; // lg breakpoint
+    if (isMobileOrTablet && searchQuery.trim() && mobileView === 'notebooks') {
+      setIsTransitioning(true);
+      setTransitionDirection('forward');
+      setTimeout(() => {
+        setMobileView('notes');
+        setIsTransitioning(false);
+      }, 300);
+    }
+  }, [searchQuery, mobileView]);
 
   // Filter notes based on current filter and search query
   const filteredNotes = useMemo(() => {
