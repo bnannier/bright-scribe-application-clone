@@ -1,5 +1,6 @@
 import React from 'react';
-import { Textarea } from '@/components/ui/textarea';
+import SunEditor from 'suneditor-react';
+import 'suneditor/dist/css/suneditor.min.css';
 
 interface BasicEditorProps {
   content?: string;
@@ -26,32 +27,35 @@ export const BasicEditor: React.FC<BasicEditorProps> = ({
                .replace(/on\w+\s*=/gi, '');
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newValue = e.target.value;
-    
-    // Apply length limit
-    if (newValue.length <= maxLength) {
-      const sanitizedValue = sanitizeContent(newValue);
-      onChange?.(sanitizedValue);
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Don't interfere with normal keyboard behavior
-    // This handler is just for debugging - remove if not needed
-    console.log('Key pressed:', e.key, 'Repeat:', e.repeat);
-  };
-
   return (
     <div className="w-full">
-      <Textarea
-        value={content}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
+      <SunEditor
+        setContents={content}
+        onChange={(content) => {
+          if (content.length <= maxLength) {
+            const sanitizedValue = sanitizeContent(content);
+            onChange?.(sanitizedValue);
+          }
+        }}
         placeholder={placeholder}
-        className={`min-h-[400px] resize-none ${className}`}
-        disabled={!editable}
-        maxLength={maxLength}
+        disable={!editable}
+        height="400px"
+        setOptions={{
+          buttonList: [
+            ['undo', 'redo'],
+            ['font', 'fontSize', 'formatBlock'],
+            ['bold', 'underline', 'italic', 'strike', 'subscript', 'superscript'],
+            ['fontColor', 'hiliteColor'],
+            ['removeFormat'],
+            ['outdent', 'indent'],
+            ['align', 'horizontalRule', 'list', 'lineHeight'],
+            ['table', 'link', 'image'],
+            ['fullScreen', 'showBlocks', 'codeView'],
+          ],
+          formats: ['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6'],
+          font: ['Arial', 'Comic Sans MS', 'Courier New', 'Impact', 'Georgia', 'Tahoma', 'Trebuchet MS', 'Verdana'],
+          fontSize: [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72],
+        }}
       />
       {content.length > maxLength * 0.9 && (
         <div className="text-sm text-muted-foreground mt-1">
