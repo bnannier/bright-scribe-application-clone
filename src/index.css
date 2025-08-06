@@ -257,24 +257,42 @@
     box-shadow: var(--shadow-medium) !important;
   }
 
-  /* NEVER override color swatches - reset all theme styling */
-  .dark-editor .sun-editor .se-list-color button,
-  .dark-editor .sun-editor .se-list-color *,
-  .light-editor .sun-editor .se-list-color button,
-  .light-editor .sun-editor .se-list-color * {
-    background: unset !important;
-    background-color: unset !important;
-    color: unset !important;
+  /* AGGRESSIVE RESET - Target ANY element with background colors in SunEditor */
+  .sun-editor [style*="background-color"],
+  .sun-editor [style*="background:"],
+  .sun-editor [style*="color:"],
+  .dark-editor .sun-editor [style*="background-color"],
+  .dark-editor .sun-editor [style*="background:"],
+  .dark-editor .sun-editor [style*="color:"],
+  .light-editor .sun-editor [style*="background-color"],
+  .light-editor .sun-editor [style*="background:"],
+  .light-editor .sun-editor [style*="color:"] {
+    background: initial !important;
+    background-color: initial !important;
+    color: initial !important;
   }
 
-  /* Reset hover effects on color swatches */
-  .dark-editor .sun-editor .se-list-color button:hover,
-  .dark-editor .sun-editor .se-list-color *:hover,
-  .light-editor .sun-editor .se-list-color button:hover,
-  .light-editor .sun-editor .se-list-color *:hover {
-    background: unset !important;
-    background-color: unset !important;
-    color: unset !important;
+  /* Reset ALL CSS properties on color swatches */
+  .sun-editor .se-list-color *,
+  .dark-editor .sun-editor .se-list-color *,
+  .light-editor .sun-editor .se-list-color * {
+    all: revert !important;
+  }
+
+  /* Completely disable theme overrides on any color-related elements */
+  .sun-editor [data-value*="#"],
+  .sun-editor [title*="color"],
+  .sun-editor .se-color-pallet *,
+  .dark-editor .sun-editor [data-value*="#"],
+  .dark-editor .sun-editor [title*="color"],
+  .dark-editor .sun-editor .se-color-pallet *,
+  .light-editor .sun-editor [data-value*="#"],
+  .light-editor .sun-editor [title*="color"],
+  .light-editor .sun-editor .se-color-pallet * {
+    background: initial !important;
+    background-color: initial !important;
+    color: initial !important;
+    border: initial !important;
   }
 
   .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
