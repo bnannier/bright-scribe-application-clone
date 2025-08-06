@@ -267,7 +267,7 @@ export const NoteEditor: React.FC<NoteEditorProps> = ({ note, notebooks }) => {
       </div>
 
       {/* Editor */}
-      <div className="flex-1 p-4 overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-hidden flex flex-col">
         <BasicEditor
           content={content}
           onChange={setContent}
