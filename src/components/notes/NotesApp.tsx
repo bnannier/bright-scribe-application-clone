@@ -11,7 +11,7 @@ import { NoteEditor } from './NoteEditor';
 import { ConfirmDialog } from './ConfirmDialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Menu, Search, ChevronLeft, Trash2 } from 'lucide-react';
+import { Plus, Menu, Search, ChevronLeft, Trash2, Pen } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 
 export type FilterType = 'all' | 'favorites' | 'archived' | 'trash' | 'notebook';
@@ -437,8 +437,8 @@ export const NotesApp = () => {
             </Button>
           )}
           {currentFilter !== 'trash' && currentFilter !== 'archived' && (
-            <Button variant="outline" size="sm" onClick={handleCreateNote}>
-              <Plus className="h-4 w-4" />
+            <Button variant="outline" size="icon" onClick={handleCreateNote} className="rounded-full h-8 w-8">
+              <Pen className="h-4 w-4" />
             </Button>
           )}
         </div>
