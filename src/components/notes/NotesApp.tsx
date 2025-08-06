@@ -278,14 +278,19 @@ export const NotesApp = () => {
   // Main unified layout for all views
   return (
     <div className="h-screen bg-background flex">
+      {/* Desktop Sidebar Toggle - Always visible as fallback */}
+      <Button 
+        variant="ghost" 
+        size="icon" 
+        className="fixed top-4 left-4 z-50 lg:hidden"
+        onClick={() => setIsSidebarOpen(true)}
+      >
+        <Menu className="h-5 w-5" />
+      </Button>
+
       {/* Mobile & Tablet Sidebar */}
       <Sheet open={isSidebarOpen} onOpenChange={setIsSidebarOpen}>
-        <SheetTrigger asChild className="lg:hidden">
-          <Button variant="ghost" size="icon" className="fixed top-4 left-4 z-50">
-            <Menu className="h-5 w-5" />
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-80 p-0 overflow-hidden">
+        <SheetContent side="left" className="w-80 p-0 overflow-hidden lg:hidden">
           <div className="relative h-full">
             {/* Notebooks View */}
             <div 
