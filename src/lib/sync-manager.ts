@@ -78,8 +78,9 @@ export class SyncManager {
           const localTime = new Date(data.local_updated_at || data.updated_at);
           
           if (serverTime > localTime) {
-            // Server version is newer, create conflict
-            throw new Error('Conflict: Server version is newer');
+            // Server version is newer, skip this update (server wins)
+            console.log(`Skipping update for ${data.id}: server version is newer`);
+            return;
           }
         }
 
