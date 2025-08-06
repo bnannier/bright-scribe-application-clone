@@ -10,12 +10,9 @@ const Index = () => {
     <div className="h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="w-full px-6 flex h-16 items-center justify-between md:justify-center lg:justify-between">
-          {/* Mobile & Tablet: Hidden spacer for centering */}
-          <div className="lg:hidden w-10"></div>
-          
-          {/* Logo - centered on mobile & tablet, left on desktop */}
-          <div className="flex items-center space-x-3 lg:flex-none">
+        <div className="w-full px-6 flex h-16 items-center justify-between">
+          {/* Logo - left on desktop, centered on mobile/tablet with spacer */}
+          <div className="flex items-center space-x-3 lg:flex-none lg:justify-start flex-1 lg:flex-initial justify-center">
             <img src="/logo.webp" alt="BrightScribe Logo" className="h-8 w-8" />
             <h1 className="text-xl text-gradient font-normal">BrightScribe</h1>
           </div>
