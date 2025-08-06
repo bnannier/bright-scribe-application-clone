@@ -103,6 +103,12 @@ export class OfflineStorage {
     return noteData;
   }
 
+  async updateNoteDirectly(note: any) {
+    // Update note without triggering sync (used for server refreshes)
+    await this.db.put('notes', note);
+    return note;
+  }
+
   async createNote(note: any) {
     const noteData = {
       ...note,
@@ -211,7 +217,27 @@ export class OfflineStorage {
   async bulkUpdateFromServer(table: 'notes' | 'notebooks', items: any[]) {
     const tx = this.db.transaction(table, 'readwrite');
     for (const item of items) {
-      await tx.store.put({ ...item, sync_status: 'synced' });
+      // Check if there's a local version with pending changes
+      const localItem = await tx.store.get(item.id);
+      
+      if (localItem && localItem.sync_status === 'pending') {
+        // Compare timestamps to determine which is newer
+        const serverDate = new Date(item.updated_at);
+        const localDate = new Date(localItem.local_updated_at || localItem.updated_at);
+        
+        if (serverDate > localDate) {
+          // Server version is newer, accept it and clear any pending sync for this item
+          await this.clearSyncQueueForItem(table, item.id);
+          await tx.store.put({ ...item, sync_status: 'synced' });
+          console.info(`Server version is newer for ${item.id}, accepting server version`);
+        } else {
+          // Local version is newer or same, keep local pending status
+          console.info(`Local version is newer or same for ${item.id}, keeping local version`);
+        }
+      } else {
+        // No local changes, safe to update
+        await tx.store.put({ ...item, sync_status: 'synced' });
+      }
     }
   }
 
