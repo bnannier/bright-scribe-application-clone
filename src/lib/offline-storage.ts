@@ -88,13 +88,18 @@ export class OfflineStorage {
   }
 
   async saveNote(note: any) {
+    // Create a clean copy to avoid reference issues
     const noteData = {
       ...note,
       local_updated_at: new Date().toISOString(),
       sync_status: 'pending' as const,
     };
+    
+    // Store the note first
     await this.db.put('notes', noteData);
-    await this.addToSyncQueue('notes', 'update', noteData);
+    
+    // Then add to sync queue with a clean copy
+    await this.addToSyncQueue('notes', 'update', { ...noteData });
     return noteData;
   }
 
@@ -158,11 +163,24 @@ export class OfflineStorage {
 
   // Sync operations
   async addToSyncQueue(table: 'notes' | 'notebooks', type: 'create' | 'update' | 'delete', data: any) {
+    // Remove any existing entries for the same item and operation type to prevent duplicates
+    const existingQueue = await this.getSyncQueue();
+    const duplicateEntries = existingQueue.filter(item => 
+      item.table === table && 
+      item.type === type && 
+      item.data.id === data.id
+    );
+    
+    // Remove duplicates
+    for (const duplicate of duplicateEntries) {
+      await this.db.delete('sync_queue', duplicate.id);
+    }
+    
     const queueItem = {
       id: `${table}-${type}-${data.id}-${Date.now()}`,
       type,
       table,
-      data,
+      data: { ...data }, // Ensure we're storing a clean copy of the data
       timestamp: new Date().toISOString(),
     };
     await this.db.put('sync_queue', queueItem);
@@ -199,5 +217,16 @@ export class OfflineStorage {
 
   async getPendingItems(table: 'notes' | 'notebooks') {
     return this.db.getAllFromIndex(table, 'sync_status', 'pending');
+  }
+
+  async clearSyncQueueForItem(table: 'notes' | 'notebooks', itemId: string) {
+    const existingQueue = await this.getSyncQueue();
+    const itemEntries = existingQueue.filter(item => 
+      item.table === table && item.data.id === itemId
+    );
+    
+    for (const entry of itemEntries) {
+      await this.db.delete('sync_queue', entry.id);
+    }
   }
 }
