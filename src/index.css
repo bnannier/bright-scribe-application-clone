@@ -178,4 +178,62 @@
     border-bottom: 1px solid hsl(var(--border)) !important;
     box-shadow: none !important;
   }
+
+  /* Dark mode styles for SunEditor */
+  .dark-editor .sun-editor .se-toolbar {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark-editor .sun-editor .se-toolbar button {
+    color: hsl(var(--foreground)) !important;
+    background: transparent !important;
+  }
+
+  .dark-editor .sun-editor .se-toolbar button:hover {
+    background: hsl(var(--accent)) !important;
+  }
+
+  .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
+  .dark-editor .sun-editor .se-wrapper-wysiwyg,
+  .dark-editor .sun-editor .se-wrapper-inner,
+  .dark-editor .sun-editor-editable,
+  .dark-editor .sun-editor .se-content {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .dark-editor .sun-editor .se-wrapper-inner .se-wrapper-code {
+    background: hsl(var(--muted)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Light mode styles for SunEditor */
+  .light-editor .sun-editor .se-toolbar {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .light-editor .sun-editor .se-toolbar button {
+    color: hsl(var(--foreground)) !important;
+    background: transparent !important;
+  }
+
+  .light-editor .sun-editor .se-toolbar button:hover {
+    background: hsl(var(--accent)) !important;
+  }
+
+  .light-editor .sun-editor .se-wrapper-inner .se-wrapper-wysiwyg,
+  .light-editor .sun-editor .se-wrapper-wysiwyg,
+  .light-editor .sun-editor .se-wrapper-inner,
+  .light-editor .sun-editor-editable,
+  .light-editor .sun-editor .se-content {
+    background: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .light-editor .sun-editor .se-wrapper-inner .se-wrapper-code {
+    background: hsl(var(--muted)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
 }
