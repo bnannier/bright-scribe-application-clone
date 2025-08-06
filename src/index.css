@@ -143,4 +143,39 @@
   .text-gradient {
     @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
   }
+
+  /* SunEditor border removal - aggressive overrides */
+  .sun-editor,
+  .sun-editor *,
+  .se-wrapper,
+  .se-wrapper *,
+  .se-container,
+  .se-container *,
+  .se-contents,
+  .se-contents *,
+  .se-content,
+  .se-content *,
+  div[data-suneditor],
+  div[data-suneditor] *,
+  .sun-editor-editable,
+  .sun-editor-editable * {
+    border: none !important;
+    border-top: none !important;
+    border-right: none !important;
+    border-bottom: none !important;
+    border-left: none !important;
+    border-width: 0 !important;
+    border-style: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+
+  /* Toolbar styling */
+  .sun-editor .se-toolbar,
+  .se-toolbar,
+  .se-toolbar * {
+    border: none !important;
+    border-bottom: 1px solid hsl(var(--border)) !important;
+    box-shadow: none !important;
+  }
 }
